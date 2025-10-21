@@ -1,0 +1,44 @@
+# Java/Maven (Backend)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/.mvnw
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.idea/
+backend/*.iml
+
+# Node.js/React/Vite (Frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/vite.config.*.ts.timestamp*
+
+# IDE-spezifische Dateien
+.idea/
+*.iml
+.vscode/
+
+# Betriebssystem-spezifische Dateien
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Temporäre Dateien
+*.tmp
+*.bak
+*.swp
+*~
+
+# Sensible Konfigurationen
+*.properties.local
+*.secret
+*.key
