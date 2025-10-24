@@ -3,11 +3,12 @@ package de.csiem.backend.service;
 import de.csiem.backend.model.Bet;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class BetService {
+
+    private final Map<String, Bet> bets = new HashMap<>();
 
     public Bet createBet(String question, List<String> options) {
 
@@ -25,11 +26,15 @@ public class BetService {
 
         String id = UUID.randomUUID().toString();
 
-        return Bet.builder()
+        Bet bet = Bet.builder()
                 .id(id)
                 .question(question)
-                .options(options)
+                .options(new ArrayList<>(options))
                 .build();
+        bets.put(id, bet);
+        return bet;
     }
+
+
 
 }

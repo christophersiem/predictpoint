@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -65,4 +64,14 @@ class BetServiceTest {
         assertThrows(IllegalArgumentException.class, () -> betService.createBet(question, options));
     }
 
+    @Test
+    void createBet_defensiveCopy_preventsExternalModifications() {
+        List<String> originalOptions = new ArrayList<>(List.of("Ja", "Nein"));
+        Bet bet = betService.createBet("Lange Frage?", originalOptions);
+
+        originalOptions.add("Vielleicht");
+
+        assertThat(bet.getOptions(), hasSize(2));
+
+    }
 }
