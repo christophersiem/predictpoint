@@ -10,6 +10,13 @@ public class BetService {
 
     private final Map<String, Bet> bets = new HashMap<>();
 
+    public Optional<Bet> getBetById(String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        return Optional.ofNullable(bets.get(id));
+    }
+
     public Bet createBet(String question, List<String> options) {
 
         if (question == null) {
@@ -34,7 +41,6 @@ public class BetService {
         bets.put(id, bet);
         return bet;
     }
-
 
 
 }
