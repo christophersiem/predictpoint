@@ -1,20 +1,27 @@
 package de.csiem.backend.model;
 
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+
 
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Bet {
 
-    private String id;
-    private String question;
-    private List<String> options;
+    private final String id;
     @Builder.Default
-    private int correctOptionIndex = -1;
-    private boolean resolved;
+    private final Status status = Status.OPEN;
+    private final String question;
+    private final List<String> options;
+    @Builder.Default
+    private final int correctOptionIndex = -1;
+    private final boolean resolved;
 }
 
 
