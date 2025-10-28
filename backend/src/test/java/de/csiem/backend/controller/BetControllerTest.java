@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,15 +41,19 @@ class BetControllerTest {
         // GIVEN
         String question = "Valid long question?";
         List<String> options = List.of("Option1", "Option2");
+        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
+        String youtubeUrl = "https://youtube.com/watch?v=test";
         CreateBetRequest request = new CreateBetRequest();
         request.setQuestion(question);
         request.setOptions(options);
+        request.setOpenUntil(openUntil);
+        request.setYoutubeUrl(youtubeUrl);
         Bet mockedBet = Bet.builder()
                 .id("test-id")
                 .question(question)
                 .options(options)
                 .build();
-        when(betService.createBet(any(String.class), any(List.class))).thenReturn(mockedBet);
+        when(betService.createBet(any(String.class), any(List.class), any(LocalDateTime.class), any(String.class))).thenReturn(mockedBet);
 
         // WHEN:
         mockMvc.perform(MockMvcRequestBuilders.post("/bets")
@@ -69,6 +74,8 @@ class BetControllerTest {
         CreateBetRequest invalidRequest = new CreateBetRequest();
         invalidRequest.setQuestion("short");
         invalidRequest.setOptions(List.of("only one"));
+        invalidRequest.setOpenUntil(LocalDateTime.now().plusDays(1));
+        invalidRequest.setYoutubeUrl("https://youtube.com/watch?v=test");
 
         // WHEN
 
@@ -103,11 +110,11 @@ class BetControllerTest {
 
     @Test
     void getById_withNonExistingId_returnsNotFound() throws Exception {
-        // GIVEN
+        //GIVEN
         String id = "non-existing-id";
         when(betService.getBetById(id)).thenReturn(Optional.empty());
 
-        // WHEN: Perform GET
+        // WHEN
         mockMvc.perform(MockMvcRequestBuilders.get("/bets/{id}", id))
                 // THEN
                 .andExpect(status().isNotFound());

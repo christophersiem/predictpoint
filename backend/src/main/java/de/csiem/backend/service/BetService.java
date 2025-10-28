@@ -3,6 +3,7 @@ package de.csiem.backend.service;
 import de.csiem.backend.model.Bet;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -17,7 +18,7 @@ public class BetService {
         return Optional.ofNullable(bets.get(id));
     }
 
-    public Bet createBet(String question, List<String> options) {
+    public Bet createBet(String question, List<String> options, LocalDateTime openUntil, String youtubeUrl) {
 
         String id = UUID.randomUUID().toString();
 
@@ -25,6 +26,8 @@ public class BetService {
                 .id(id)
                 .question(question)
                 .options(new ArrayList<>(options))
+                .openUntil(openUntil)
+                .youtubeUrl(youtubeUrl)
                 .build();
         bets.put(id, bet);
         return bet;

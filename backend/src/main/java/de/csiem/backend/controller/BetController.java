@@ -21,7 +21,7 @@ public class BetController {
 
     @PostMapping
     public ResponseEntity<Bet> createBet(@RequestBody @Valid CreateBetRequest betRequest, UriComponentsBuilder uriBuilder) {
-        Bet createdBet = betService.createBet(betRequest.getQuestion(), betRequest.getOptions());
+        Bet createdBet = betService.createBet(betRequest.getQuestion(), betRequest.getOptions(), betRequest.getOpenUntil(), betRequest.getYoutubeUrl());
         URI location = uriBuilder.path("/bets/{id}").buildAndExpand(createdBet.getId()).toUri();
         return ResponseEntity.created(location).body(createdBet);
     }

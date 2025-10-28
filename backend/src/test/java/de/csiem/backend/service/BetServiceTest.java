@@ -4,7 +4,7 @@ import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Status;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +19,12 @@ class BetServiceTest {
     void createBet_withValidOptions_assignsUuidAndSetsProperties() {
         // GIVEN
         String question = "What is the color of Mikes tshirt?";
-        List<String> options = new ArrayList<>(List.of("yellow", "blue", "red"));
+        List<String> options = List.of("yellow", "blue", "red");
+        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
+        String youtubeUrl = "https://youtube.com/watch?v=test";
 
         // WHEN
-        Bet result = betService.createBet(question, options);
+        Bet result = betService.createBet(question, options, openUntil, youtubeUrl);
 
         // THEN
         assertThat(result.getId()).isNotNull();
@@ -30,15 +32,20 @@ class BetServiceTest {
         assertThat(result.getStatus()).isEqualTo(Status.OPEN);
         assertThat(result.getCorrectOptionIndex()).isEqualTo(-1);
         assertThat(result.isResolved()).isEqualTo(false);
+        assertThat(result.getOpenUntil()).isEqualTo(openUntil);
+        assertThat(result.getYoutubeUrl()).isEqualTo(youtubeUrl);
     }
 
 
     @Test
     void createBet_defensiveCopy_preventsExternalModifications() {
-        List<String> originalOptions = new ArrayList<>(List.of("Ja", "Nein"));
-        Bet bet = betService.createBet("Lange Frage?", originalOptions);
+        String question = "What is the color of Mikes tshirt?";
+        List<String> options = List.of("yellow", "blue", "red");
+        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
+        String youtubeUrl = "https://youtube.com/watch?v=test";
+        Bet bet = betService.createBet(question, options, openUntil, youtubeUrl);
 
-        originalOptions.add("Vielleicht");
+        options.add("black");
 
         assertThat(bet.getOptions()).hasSize(2);
     }
@@ -46,9 +53,11 @@ class BetServiceTest {
     @Test
     void getBetById_withExistingId_returnsBet() {
         // GIVEN
-        String question = "Valid question here?";
-        List<String> options = List.of("Option1", "Option2");
-        Bet createdBet = betService.createBet(question, options);
+        String question = "What is the color of Mikes tshirt?";
+        List<String> options = List.of("yellow", "blue", "red");
+        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
+        String youtubeUrl = "https://youtube.com/watch?v=test";
+        Bet createdBet = betService.createBet(question, options, openUntil, youtubeUrl);
         String existingId = createdBet.getId();
 
         // WHEN
