@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import './App.css';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: username }),
+                body: JSON.stringify({name: username}),
             });
             if (!response.ok) {
                 throw new Error('Fehler beim Registrieren');
@@ -45,7 +45,7 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({id}),
             });
             if (!response.ok) {
                 throw new Error('Fehler beim Einloggen');
@@ -81,8 +81,11 @@ function App() {
             <main className="auth-wrapper">
                 <div className="auth-card">
                     <div className="auth-left">
-                        <h2>Einloggen</h2>
-                        <p className="subtext">Gib deine Kontonummer (ID) ein, um fortzufahren.</p>
+                        <div className="section-head">
+
+                            <h2>Einloggen</h2>
+                            <p className="subtext">Gib deine Kontonummer (ID) ein, um fortzufahren.</p>
+                        </div>
                         <form onSubmit={handleLogin} className="form">
                             <label htmlFor="id">Kontonummer / ID</label>
                             <input
@@ -99,11 +102,14 @@ function App() {
                         </form>
                     </div>
 
-                    <div className="divider" aria-hidden />
+                    <div className="divider" aria-hidden/>
 
                     <div className="auth-right">
-                        <h2>Neu hier?</h2>
-                        <p className="subtext">Erstelle nur durch die Wahl eines Usernamens ein Konto.</p>
+                        <div className="section-head">
+
+                            <h2>Neu hier?</h2>
+                            <p className="subtext">Erstelle nur durch die Wahl eines Usernamens ein Konto.</p>
+                        </div>
                         <form onSubmit={handleCreateUser} className="form">
                             <label htmlFor="username">Username</label>
                             <input
@@ -119,7 +125,6 @@ function App() {
                             </button>
                         </form>
 
-                        {/* Highlight-Hinweis */}
                         <div className="important-hint">
                             <p className="important-hint-title">Wichtig 🔐</p>
                             <p>
@@ -155,7 +160,6 @@ function App() {
                                 onClick={handleCopy}
                                 aria-label="ID kopieren"
                             >
-                                {/* simples Icon */}
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="18"

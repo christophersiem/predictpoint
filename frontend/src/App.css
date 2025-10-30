@@ -243,6 +243,14 @@ body,
   color: rgba(255, 255, 255, 0.25);
   font-size: 0.7rem;
 }
+.section-head {
+  min-height: 90px;              /* kannst du mit 80–110 spielen */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;       /* Text schön mittig */
+  gap: 0.4rem;
+}
+
 
 .important-hint {
   background: rgba(247, 147, 26, 0.12);
