@@ -14,7 +14,7 @@ export default function InfoBanner({ open, onToggle }: InfoBannerProps) {
                 <ul>
                     <li>Dies ist ein Spiel aus Spaß an der Freude – ohne Einsatz.</li>
                     <li>Es handelt sich um ein privates Projekt.</li>
-                    <li>Es werden keine sensiblen Daten .</li>
+                    <li>Es müssen keine sensiblen Daten angegeben werden .</li>
                 </ul>
             </div>
         </div>

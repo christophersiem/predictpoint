@@ -26,18 +26,18 @@ export default function Dashboard() {
                         </div>
                         <div className="open-bets-grid">
                             <article className="bet-card">
-                                <p className="bet-title">Liverpool vs. Chelsea</p>
-                                <p className="bet-meta">Wette: Über 2,5 Tore • Einsatz: 10</p>
+                                <p className="bet-title">Wie oft sagt Roman das Wort "Achtung?"</p>
+                                <p className="bet-meta">Wette: mehr als 3x</p>
                                 <p className="bet-status bet-status-open">läuft …</p>
                             </article>
                             <article className="bet-card">
-                                <p className="bet-title">Bayern vs. Dortmund</p>
-                                <p className="bet-meta">Wette: Sieg Bayern • Einsatz: 5</p>
+                                <p className="bet-title">Zu welcher Blockzeit endet der Stream?</p>
+                                <p className="bet-meta">Wette: 912372</p>
                                 <p className="bet-status bet-status-open">läuft …</p>
                             </article>
                             <article className="bet-card">
-                                <p className="bet-title">Real Madrid vs. Girona</p>
-                                <p className="bet-meta">Wette: Beide treffen • Einsatz: 7</p>
+                                <p className="bet-title">Ist der BTC Preis ($) nach dem Stream höher oder niedriger als zu Beginn?</p>
+                                <p className="bet-meta">Wette: höher</p>
                                 <p className="bet-status bet-status-open">läuft …</p>
                             </article>
                         </div>
@@ -56,19 +56,14 @@ export default function Dashboard() {
                         {showEvaluated && (
                             <div className="evaluated-list">
                                 <article className="eval-item">
-                                    <p className="eval-title">PSG vs. Lyon</p>
-                                    <p className="eval-meta">Tipp: Sieg PSG • Einsatz: 10</p>
+                                    <p className="eval-title">Wie oft sagt Roman das Wort "Scharlatan(e)?"</p>
+                                    <p className="eval-meta">Tipp: mind. 1x</p>
                                     <p className="eval-result win">gewonnen +14</p>
                                 </article>
                                 <article className="eval-item">
-                                    <p className="eval-title">Inter vs. Milan</p>
-                                    <p className="eval-meta">Tipp: Unentschieden • Einsatz: 5</p>
+                                    <p className="eval-title"> Zu welcher Blockzeit endet der Stream?</p>
+                                    <p className="eval-meta">Tipp: 912811</p>
                                     <p className="eval-result loss">verloren</p>
-                                </article>
-                                <article className="eval-item">
-                                    <p className="eval-title">Leipzig vs. Köln</p>
-                                    <p className="eval-meta">Tipp: Über 1,5 Tore • Einsatz: 7</p>
-                                    <p className="eval-result win">gewonnen +5</p>
                                 </article>
                             </div>
                         )}
