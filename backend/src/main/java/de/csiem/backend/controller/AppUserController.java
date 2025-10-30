@@ -2,6 +2,7 @@ package de.csiem.backend.controller;
 
 import de.csiem.backend.dto.CreateAppUserRequest;
 import de.csiem.backend.dto.LoginRequest;
+import de.csiem.backend.dto.LoginResponse;
 import de.csiem.backend.model.AppUser;
 import de.csiem.backend.service.AppUserService;
 import jakarta.servlet.http.HttpSession;
@@ -29,13 +30,15 @@ public class AppUserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request, HttpSession session) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
         Optional<AppUser> user = appUserService.getUserById(request.getId());
         if (user.isPresent()) {
             session.setAttribute("userId", request.getId());
-            return ResponseEntity.ok("Logged in as " + user.get().getName());
+            return ResponseEntity.ok(LoginResponse.builder().name(user.get().getName()).id(user.get().getId()).build());
         } else {
-            return ResponseEntity.badRequest().body("Invalid ID");
+            return ResponseEntity
+                    .badRequest().build();
+
         }
     }
 

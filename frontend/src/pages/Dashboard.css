@@ -1,0 +1,258 @@
+/* Dashboard Grundlayout */
+.dash-page {
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #0b0d10 0%, #030405 80%);
+    display: flex;
+    flex-direction: column;
+}
+
+/* oben */
+.dash-topbar {
+    height: 62px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding: 0 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dash-hello {
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.dash-sub {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* grid: main + sidebar */
+.dash-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(620px, 1.1fr) 320px;
+    gap: 1.5rem;
+    padding: 1.5rem 2.2rem 2rem;
+}
+
+/* main content */
+.dash-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+/* cards */
+.card-block {
+    background: rgba(7, 8, 10, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 1.2rem;
+    padding: 1.15rem 1.3rem 1.1rem;
+    backdrop-filter: blur(6px);
+}
+
+.section-headline {
+    margin-bottom: 1rem;
+}
+
+.section-headline h2 {
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.section-headline p {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* offene wetten grid */
+.open-bets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.9rem;
+}
+
+.bet-card {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(247, 147, 26, 0.08);
+    border-radius: 1rem;
+    padding: 0.7rem 0.7rem 0.6rem;
+}
+
+.bet-title {
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: #fff;
+}
+
+.bet-meta {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.4rem;
+}
+
+.bet-status {
+    font-size: 0.65rem;
+    display: inline-block;
+    padding: 0.3rem 0.5rem;
+    border-radius: 999px;
+}
+
+.bet-status-open {
+    background: rgba(247, 147, 26, 0.12);
+    color: #fda84a;
+}
+
+/* ausgewertete wetten */
+.collapse-trigger {
+    width: 100%;
+    background: rgba(247, 147, 26, 0.07);
+    border: 1px solid rgba(247, 147, 26, 0.4);
+    border-radius: 1rem;
+    padding: 0.55rem 0.7rem;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.chevron {
+    transition: transform 0.1s ease;
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+.chevron.rotated {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.evaluated-list {
+    margin-top: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.eval-item {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.01);
+    border-radius: 0.8rem;
+    padding: 0.5rem 0.6rem 0.45rem;
+}
+
+.eval-title {
+    font-weight: 500;
+    color: #fff;
+}
+
+.eval-meta {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.eval-result {
+    font-size: 0.65rem;
+    margin-top: 0.25rem;
+}
+
+.eval-result.win {
+    color: #8eff9e;
+}
+
+.eval-result.loss {
+    color: #ff9292;
+}
+
+/* vorschlag formular */
+.proposal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-top: 0.7rem;
+}
+
+.proposal-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.proposal-form input,
+.proposal-form textarea {
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(247, 147, 26, 0.25);
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.55rem;
+    color: #fff;
+    font-size: 0.75rem;
+}
+
+.proposal-form textarea {
+    resize: vertical;
+}
+
+/* Sidebar / Leaderboard */
+.dash-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+}
+
+.sidebar-block h2 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.leader-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+}
+
+.leader-list li {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.rank {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(247, 147, 26, 0.15);
+    display: grid;
+    place-items: center;
+    font-size: 0.6rem;
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}
+
+.score {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+/* responsive */
+@media (max-width: 1024px) {
+    .dash-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-sidebar {
+        order: 2;
+    }
+}
