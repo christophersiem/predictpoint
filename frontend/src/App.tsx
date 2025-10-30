@@ -1,14 +1,17 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
     const [id, setId] = useState('');
     const [username, setUsername] = useState('');
 
-    // für das Overlay
+    // overlay / id
     const [showIdModal, setShowIdModal] = useState(false);
     const [createdId, setCreatedId] = useState('');
     const [copied, setCopied] = useState(false);
+
+    // NEU: mobile-collapse für Registrierung
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,16 +21,14 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({name: username}),
+                body: JSON.stringify({ name: username }),
             });
             if (!response.ok) {
                 throw new Error('Fehler beim Registrieren');
             }
             const newId = await response.text();
 
-            // in Loginfeld setzen
             setId(newId);
-            // für Overlay merken
             setCreatedId(newId);
             setShowIdModal(true);
             setCopied(false);
@@ -45,7 +46,7 @@ function App() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({id}),
+                body: JSON.stringify({ id }),
             });
             if (!response.ok) {
                 throw new Error('Fehler beim Einloggen');
@@ -80,9 +81,9 @@ function App() {
 
             <main className="auth-wrapper">
                 <div className="auth-card">
+                    {/* LINKS */}
                     <div className="auth-left">
                         <div className="section-head">
-
                             <h2>Einloggen</h2>
                             <p className="subtext">Gib deine Kontonummer (ID) ein, um fortzufahren.</p>
                         </div>
@@ -93,7 +94,7 @@ function App() {
                                 type="text"
                                 onChange={(e) => setId(e.target.value)}
                                 value={id}
-                                placeholder="z. B. 38afdb25-07fb-454e-a5af-2761d..."
+                                placeholder="z.B. 38afdb25-07fb-454e-a5af-2761d..."
                                 required
                             />
                             <button type="submit" className="primary-btn">
@@ -102,35 +103,49 @@ function App() {
                         </form>
                     </div>
 
-                    <div className="divider" aria-hidden/>
+                    <div className="divider" aria-hidden />
 
-                    <div className="auth-right">
-                        <div className="section-head">
+                    {/* RECHTS */}
+                    <div className={`auth-right ${isRegisterOpen ? 'is-open' : ''}`}>
+                        {/* Mobile-Toggle */}
+                        <button
+                            type="button"
+                            className="mobile-register-toggle"
+                            onClick={() => setIsRegisterOpen((prev) => !prev)}
+                        >
+                            Neu hier?
+                            <span className={`chevron ${isRegisterOpen ? 'rotated' : ''}`}>⌃</span>
+                        </button>
 
-                            <h2>Neu hier?</h2>
-                            <p className="subtext">Erstelle nur durch die Wahl eines Usernamens ein Konto.</p>
-                        </div>
-                        <form onSubmit={handleCreateUser} className="form">
-                            <label htmlFor="username">Username</label>
-                            <input
-                                id="username"
-                                type="text"
-                                onChange={(e) => setUsername(e.target.value)}
-                                value={username}
-                                placeholder="balu"
-                                required
-                            />
-                            <button type="submit" className="secondary-btn">
-                                Registrieren
-                            </button>
-                        </form>
+                        {/* Inhalt, der auf mobile einklappbar ist */}
+                        <div className="register-content">
+                            <div className="section-head">
+                                <h2>Neu hier?</h2>
+                                <p className="subtext">Erstelle nur durch die Wahl eines Usernamens ein Konto.</p>
+                            </div>
 
-                        <div className="important-hint">
-                            <p className="important-hint-title">Wichtig 🔐</p>
-                            <p>
-                                Wir erzeugen eine eindeutige ID für dich. Notiere sie – ohne sie
-                                kannst du dich nicht wieder einloggen.
-                            </p>
+                            <form onSubmit={handleCreateUser} className="form">
+                                <label htmlFor="username">Username</label>
+                                <input
+                                    id="username"
+                                    type="text"
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    value={username}
+                                    placeholder="balu"
+                                    required
+                                />
+                                <button type="submit" className="secondary-btn">
+                                    Registrieren
+                                </button>
+                            </form>
+
+                            <div className="important-hint">
+                                <p className="important-hint-title">Wichtig 🔐</p>
+                                <p>
+                                    Es wird eine eindeutige ID für dich erzeugt. Speichere sie und gib sie nicht weiter – ohne die ID
+                                    kannst du dich nicht wieder einloggen.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -140,26 +155,17 @@ function App() {
                 <p>© {new Date().getFullYear()} predictpoint</p>
             </footer>
 
-            {/* Overlay für erzeugte ID */}
+            {/* Overlay */}
             {showIdModal && (
                 <div className="id-modal-backdrop" onClick={() => setShowIdModal(false)}>
-                    <div
-                        className="id-modal"
-                        onClick={(e) => e.stopPropagation()} // Click im Modal nicht schließen
-                    >
+                    <div className="id-modal" onClick={(e) => e.stopPropagation()}>
                         <h3>Deine neue ID</h3>
                         <p className="id-modal-text">
                             Diese ID brauchst du jedes Mal zum Einloggen. Bitte sicher abspeichern.
                         </p>
-
                         <div className="id-box">
                             <span className="id-value">{createdId}</span>
-                            <button
-                                type="button"
-                                className="copy-btn"
-                                onClick={handleCopy}
-                                aria-label="ID kopieren"
-                            >
+                            <button type="button" className="copy-btn" onClick={handleCopy}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="18"
@@ -176,9 +182,7 @@ function App() {
                                 </svg>
                             </button>
                         </div>
-
-                        {copied ? <p className="copied-hint">✅ In die Zwischenablage kopiert</p> : null}
-
+                        {copied && <p className="copied-hint">✅ In die Zwischenablage kopiert</p>}
                         <button
                             type="button"
                             className="primary-btn modal-close-btn"
