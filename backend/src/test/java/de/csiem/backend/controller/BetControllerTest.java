@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,36 +38,41 @@ class BetControllerTest {
 
     @Test
     void createBet_withValidRequest_returnsCreatedWithLocation() throws Exception {
-
-        // GIVEN
         String question = "Valid long question?";
         List<String> options = List.of("Option1", "Option2");
         LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
         String youtubeUrl = "https://youtube.com/watch?v=test";
+        String userId = "test-user-id";
+
         CreateBetRequest request = new CreateBetRequest();
         request.setQuestion(question);
         request.setOptions(options);
         request.setOpenUntil(openUntil);
         request.setYoutubeUrl(youtubeUrl);
+
         Bet mockedBet = Bet.builder()
                 .id("test-id")
                 .question(question)
                 .options(options)
+                .openUntil(openUntil)
+                .youtubeUrl(youtubeUrl)
                 .build();
-        when(betService.createBet(any(String.class), any(List.class), any(LocalDateTime.class), any(String.class))).thenReturn(mockedBet);
+        when(betService.createBet(any(String.class), any(List.class), any(LocalDateTime.class), any(String.class), eq(userId)))
+                .thenReturn(mockedBet);
 
-        // WHEN:
+        // WHEN
         mockMvc.perform(MockMvcRequestBuilders.post("/bets")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-
+                        .content(objectMapper.writeValueAsString(request))
+                        .sessionAttr("userId", userId))
                 // THEN
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/bets/test-id"))
                 .andExpect(jsonPath("$.id").value("test-id"))
-                .andExpect(jsonPath("$.question").value(question));
+                .andExpect(jsonPath("$.question").value(question))
+                .andExpect(jsonPath("$.openUntil").exists())
+                .andExpect(jsonPath("$.youtubeUrl").value(youtubeUrl));
     }
-
     @Test
     void createBet_withInvalidRequest_returnsBadRequest() throws Exception {
 
