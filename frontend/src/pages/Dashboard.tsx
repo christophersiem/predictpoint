@@ -26,7 +26,7 @@ export default function Dashboard() {
                         </div>
                         <div className="open-bets-grid">
                             <article className="bet-card">
-                                <p className="bet-title">Wie oft sagt Roman das Wort "Achtung?"</p>
+                                <p className="bet-title">Welches "</p>
                                 <p className="bet-meta">Wette: mehr als 3x</p>
                                 <p className="bet-status bet-status-open">läuft …</p>
                             </article>
@@ -72,12 +72,12 @@ export default function Dashboard() {
                     <section className="card-block">
                         <h2>Wettvorschlag einreichen</h2>
                         <p className="sub">
-                            Schlage ein Spiel oder eine Quote vor. (Momentan Dummy-Formular)
+                            Schlage eine Frage vor.
                         </p>
                         <form className="proposal-form">
                             <label>
-                                Spiel / Event
-                                <input type="text" placeholder="z. B. Arsenal vs. Spurs" />
+                                Frage
+                                <input type="text" placeholder="z. B. " />
                             </label>
                             <label>
                                 Dein Tipp

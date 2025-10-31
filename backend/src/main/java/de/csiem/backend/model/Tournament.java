@@ -1,6 +1,5 @@
 package de.csiem.backend.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +11,16 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class AppUser {
+public class Tournament {
     private final String id;
-    private final String hashedLoginId;
+    private final AppUser admin;
     private final String name;
+    private final String inviteCode;
+    private final LocalDateTime start;
+    private final int durationDays;
     @Builder.Default
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final List<Bet> bets = new ArrayList<>();
     @Builder.Default
-    private final List<Tournament> administeredTournaments = new ArrayList<>();
-    @Builder.Default
-    private final List<Tournament> myTournaments = new ArrayList<>();
+    private final List<AppUser> participants = new ArrayList<>();
+
 }

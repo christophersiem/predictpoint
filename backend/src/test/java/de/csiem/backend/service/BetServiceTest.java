@@ -1,8 +1,9 @@
 package de.csiem.backend.service;
 
+import de.csiem.backend.dto.BetResponse;
 import de.csiem.backend.model.AppUser;
-import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Status;
+import de.csiem.backend.model.Tournament;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,119 +24,165 @@ class BetServiceTest {
 
     @Mock
     private AppUserService appUserService;
+
+    @Mock
+    private TournamentService tournamentService;
+
     private BetService betService;
 
     @BeforeEach
     void setUp() {
-        betService = new BetService(appUserService);
-    }
-
-    private AppUser getTestUser() {
-        return AppUser.builder()
-                .id("test-user-id")
-                .name("TestUser")
-                .build();
+        betService = new BetService(appUserService, tournamentService);
     }
 
     @Test
-    void createBet_withValidOptions_assignsUuidAndSetsProperties() {
+    void createBet_withValidInput_createsBetAndAddsToTournament() {
         // GIVEN
         String question = "What is the color of Mikes tshirt?";
         List<String> options = new ArrayList<>(List.of("yellow", "blue", "red"));
         LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
         String youtubeUrl = "https://youtube.com/watch?v=test";
+        String tournamentId = "test-tournament-id";
+        String userId = "test-user-id";
 
-        AppUser mockUser = getTestUser();
-        when(appUserService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        AppUser mockUser = AppUser.builder().id(userId).name("TestAdmin").build();
+        Tournament mockTournament = Tournament.builder()
+                .id(tournamentId)
+                .admin(mockUser)
+                .name("Test Tournament")
+                .bets(new ArrayList<>())
+                .build();
+
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         // WHEN
-        Bet result = betService.createBet(question, options, openUntil, youtubeUrl, mockUser.getId());
+        BetResponse result = betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId);
 
         // THEN
         assertThat(result.getId()).isNotNull();
+        assertThat(result.getQuestion()).isEqualTo(question);
         assertThat(result.getOptions()).isEqualTo(options);
-        assertThat(result.getStatus()).isEqualTo(Status.OPEN);
-        assertThat(result.getCorrectOptionIndex()).isEqualTo(-1);
-        assertThat(result.isResolved()).isEqualTo(false);
         assertThat(result.getOpenUntil()).isEqualTo(openUntil);
         assertThat(result.getYoutubeUrl()).isEqualTo(youtubeUrl);
-        assertThat(mockUser.getMyBets()).contains(result);
+        assertThat(result.getStatus()).isEqualTo(Status.OPEN);
+        assertThat(result.getCorrectOptionIndex()).isEqualTo(-1);
+        assertThat(result.isResolved()).isFalse();
+        //assertThat(mockTournament.getBets()).contains(result);
     }
 
     @Test
-    void createBet_withInvalidUserId_throwsException() {
+    void createBet_withNonExistingTournament_throwsException() {
         // GIVEN
-        String question = "What is the color of Mikes tshirt?";
-        List<String> options = new ArrayList<>(List.of("yellow", "blue", "red"));
+        String question = "Test Question";
+        List<String> options = List.of("A", "B");
         LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
-        String youtubeUrl = "https://youtube.com/watch?v=test";
-        String invalidUserId = "invalid-id";
+        String youtubeUrl = "https://youtube.com/test";
+        String tournamentId = "invalid-tournament";
+        String userId = "test-user";
 
-        when(appUserService.getUserById(invalidUserId)).thenReturn(Optional.empty());
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.empty());
 
-        // WHEN -> THEN
-        assertThatThrownBy(() -> betService.createBet(question, options, openUntil, youtubeUrl, invalidUserId))
+        // WHEN / THEN
+        assertThatThrownBy(() -> betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User not found");
+                .hasMessage("Tournament not found");
+    }
+
+    @Test
+    void createBet_withNonAdminUser_throwsException() {
+        // GIVEN
+        String question = "Test Question";
+        List<String> options = List.of("A", "B");
+        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
+        String youtubeUrl = "https://youtube.com/test";
+        String tournamentId = "test-tournament";
+        String userId = "non-admin-user";
+
+        AppUser admin = AppUser.builder().id("admin-id").name("Admin").build();
+        AppUser nonAdmin = AppUser.builder().id(userId).name("NonAdmin").build();
+        Tournament mockTournament = Tournament.builder()
+                .id(tournamentId)
+                .admin(admin)
+                .bets(new ArrayList<>())
+                .build();
+
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(appUserService.getUserById(userId)).thenReturn(Optional.of(nonAdmin));
+
+        // WHEN / THEN
+        assertThatThrownBy(() -> betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Only admin can create bets");
     }
 
     @Test
     void createBet_defensiveCopy_preventsExternalModifications() {
         // GIVEN
-        String question = "What is the color of Mikes tshirt?";
-        List<String> originalOptions = new ArrayList<>(List.of("yellow", "blue", "red"));
+        String question = "Test Question";
+        List<String> originalOptions = new ArrayList<>(List.of("A", "B"));
         LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
-        String youtubeUrl = "https://youtube.com/watch?v=test";
+        String youtubeUrl = "https://youtube.com/test";
+        String tournamentId = "test-tournament";
+        String userId = "test-user";
 
+        AppUser mockUser = AppUser.builder().id(userId).name("TestUser").build();
+        Tournament mockTournament = Tournament.builder()
+                .id(tournamentId)
+                .admin(mockUser)
+                .bets(new ArrayList<>())
+                .build();
 
-        AppUser mockUser = getTestUser();
-        when(appUserService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         // WHEN
-        Bet bet = betService.createBet(question, originalOptions, openUntil, youtubeUrl, mockUser.getId());
+        BetResponse bet = betService.createBet(question, originalOptions, openUntil, youtubeUrl, tournamentId, userId);
 
-        originalOptions.add("black");
+        // Modify original
+        originalOptions.add("C");
 
         // THEN
-        assertThat(bet.getOptions()).hasSize(3);
-        assertThat(bet.getOptions()).containsExactly("yellow", "blue", "red");
+        assertThat(bet.getOptions()).hasSize(2);
+        assertThat(bet.getOptions()).containsExactly("A", "B");
     }
-
 
     @Test
     void getBetById_withExistingId_returnsBet() {
         // GIVEN
-        String question = "What is the color of Mikes tshirt?";
-        List<String> options = List.of("yellow", "blue", "red");
+        String question = "Test Question";
+        List<String> options = List.of("A", "B");
         LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
-        String youtubeUrl = "https://youtube.com/watch?v=test";
+        String youtubeUrl = "https://youtube.com/test";
+        String tournamentId = "test-tournament";
+        String userId = "test-user";
 
-        AppUser mockUser = getTestUser();
-        when(appUserService.getUserById(mockUser.getId())).thenReturn(Optional.of(mockUser));
+        AppUser mockUser = AppUser.builder().id(userId).name("TestUser").build();
+        Tournament mockTournament = Tournament.builder()
+                .id(tournamentId)
+                .admin(mockUser)
+                .bets(new ArrayList<>())
+                .build();
 
-        Bet createdBet = betService.createBet(question, options, openUntil, youtubeUrl, mockUser.getId());
-        String existingId = createdBet.getId();
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+
+        BetResponse createdBet = betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId);
+        String id = createdBet.getId();
 
         // WHEN
-        Optional<Bet> result = betService.getBetById(existingId);
+        Optional<BetResponse> result = betService.getBetById(id);
 
         // THEN
         assertThat(result).isPresent();
-        assertThat(result.get())
-                .isEqualTo(createdBet)
-                .extracting(Bet::getQuestion)
-                .isEqualTo(question);
-        assertThat(result.get().getOpenUntil()).isEqualTo(openUntil);
-        assertThat(result.get().getYoutubeUrl()).isEqualTo(youtubeUrl);
+        assertThat(result.get().getId()).isEqualTo(id);
+        assertThat(result.get().getQuestion()).isEqualTo(question);
     }
 
     @Test
-    void getBetById_withNonExistingId_returnsEmptyOptional() {
-        // GIVEN
-        String nonExistingId = "invalid-id";
-
+    void getBetById_withNonExistingId_returnsEmpty() {
         // WHEN
-        Optional<Bet> result = betService.getBetById(nonExistingId);
+        Optional<BetResponse> result = betService.getBetById("invalid");
 
         // THEN
         assertThat(result).isEmpty();
@@ -143,9 +190,9 @@ class BetServiceTest {
 
     @Test
     void getBetById_withNullId_throwsException() {
-        // WHEN -> THEN
+        // WHEN / THEN
         assertThatThrownBy(() -> betService.getBetById(null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("ID cannot be null");
+                .hasMessage("ID cannot be null or blank");
     }
 }

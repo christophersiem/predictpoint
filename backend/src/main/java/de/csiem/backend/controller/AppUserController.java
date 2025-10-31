@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class AppUserController {
 
     private final AppUserService appUserService;
@@ -31,7 +31,7 @@ public class AppUserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
-        Optional<AppUser> user = appUserService.getUserById(request.getId());
+        Optional<AppUser> user = appUserService.login(request.getId());
         if (user.isPresent()) {
             session.setAttribute("userId", request.getId());
             return ResponseEntity.ok(LoginResponse.builder().name(user.get().getName()).id(user.get().getId()).build());
