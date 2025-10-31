@@ -34,17 +34,16 @@ class AppUserControllerTest {
     void login_withValidId_setsSessionAndReturnsOk() throws Exception {
         String id = "test-id";
         AppUser mockUser = AppUser.builder().id(id).name("TestUser").build();
-        when(appUserService.getUserById(id)).thenReturn(Optional.of(mockUser));
+        when(appUserService.login(id)).thenReturn(Optional.of(mockUser));
 
         LoginRequest request = new LoginRequest();
         request.setId(id);
 
-        mockMvc.perform(post("/user/login")
+        mockMvc.perform(post("/api/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(content()
-                        .string("Logged in as TestUser"));
+                .andExpect(content().json("{\"id\":\"test-id\",\"name\":\"TestUser\"}"));
 
 
     }

@@ -24,7 +24,7 @@ export default function RegisterCard({
             <div className="register-content">
                 <div className="section-head">
                     <h2>Neu hier?</h2>
-                    <p className="subtext">Erstelle nur durch die Wahl eines Usernamens ein Konto.</p>
+                    <p className="subtext">Dann schnapp dir zunächst einen Usernamen.</p>
                 </div>
 
                 <form onSubmit={onSubmit} className="form">
