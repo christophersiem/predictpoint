@@ -2,8 +2,10 @@ package de.csiem.backend.service;
 
 import de.csiem.backend.dto.BetResponse;
 import de.csiem.backend.model.AppUser;
+import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Status;
 import de.csiem.backend.model.Tournament;
+import de.csiem.backend.repository.BetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,12 +29,16 @@ class BetServiceTest {
 
     @Mock
     private TournamentService tournamentService;
+    @Mock
+    private BetRepository betRepository;
+    @Mock
+    private IdService idService;
 
     private BetService betService;
 
     @BeforeEach
     void setUp() {
-        betService = new BetService(appUserService, tournamentService);
+        betService = new BetService(appUserService, tournamentService, betRepository, idService);
     }
 
     @Test
@@ -166,6 +172,8 @@ class BetServiceTest {
 
         when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
         when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        when(idService.createUUID()).thenReturn("mock-id");
+        when(betRepository.findById("mock-id")).thenReturn(Optional.of(Bet.builder().options(options).id("mock-id").question(question).build()));
 
         BetResponse createdBet = betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId);
         String id = createdBet.getId();
@@ -190,7 +198,8 @@ class BetServiceTest {
 
     @Test
     void getBetById_withNullId_throwsException() {
-        // WHEN / THEN
+
+        //  THEN
         assertThatThrownBy(() -> betService.getBetById(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("ID cannot be null or blank");

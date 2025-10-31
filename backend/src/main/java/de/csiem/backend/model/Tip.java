@@ -1,18 +1,33 @@
 package de.csiem.backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
-@Builder
+@Entity
+@Table(name = "tips")
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Tip {
-    private final String id;
-    private final AppUser user;
-    private final Bet bet;
-    private final int selectedOptionIndex;
-    private final String selectedAnswer;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
+    @ManyToOne
+    @JoinColumn(name = "bet_id", nullable = false)
+    private Bet bet;
+
+    private int selectedOptionIndex;
+
+    private String selectedAnswer;
+
     @Builder.Default
     private int points = 0;
 }

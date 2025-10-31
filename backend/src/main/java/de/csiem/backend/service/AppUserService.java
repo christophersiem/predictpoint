@@ -3,6 +3,7 @@ package de.csiem.backend.service;
 import de.csiem.backend.dto.AppUserResponse;
 import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Tournament;
+import de.csiem.backend.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +18,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AppUserService {
 
-    private final Map<String, AppUser> users = new HashMap<>();
     private final PasswordEncoder passwordEncoder;
+    private final AppUserRepository appUserRepository;
 
     public String createAppUser(String name) {
+        if (appUserRepository.existsByNameIgnoreCase(name)) {
+            throw new IllegalArgumentException("Username already exists (case-insensitive)");
+        }
         String loginId = UUID.randomUUID().toString();
         String hashedLoginId = passwordEncoder.encode(loginId);
 
@@ -31,16 +35,16 @@ public class AppUserService {
                 .name(name)
                 .hashedLoginId(hashedLoginId)
                 .build();
-        users.put(internalId, user);
+
+        appUserRepository.save(user);
         return loginId;
     }
 
     public Optional<AppUser> login(String loginId) {
-        return users.values().stream()
+        return appUserRepository.findAll().stream()
                 .filter(user -> passwordEncoder.matches(loginId, user.getHashedLoginId()))
                 .findFirst();
     }
-
     public AppUserResponse getOtherUserResponse(String userId) {
         AppUser user = getUserById(userId).orElse(null);
         if (user == null) {
@@ -65,10 +69,10 @@ public class AppUserService {
     }
 
     public Optional<AppUser> getUserById(String id) {
-        return Optional.ofNullable(users.get(id));
+        return appUserRepository.findById(id);
     }
 
     public Optional<String> getUserNameById(String id) {
-        return getUserById(id).map(AppUser::getName);
+        return appUserRepository.findById(id).map(AppUser::getName);
     }
 }

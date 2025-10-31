@@ -4,6 +4,7 @@ import de.csiem.backend.dto.BetResponse;
 import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Tournament;
+import de.csiem.backend.repository.BetRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ public class BetService {
 
     private final AppUserService appUserService;
     private final TournamentService tournamentService;
-    private final Map<String, Bet> bets = new HashMap<>();
+    private final BetRepository betRepository;
+    private final IdService idService;
 
     public BetResponse createBet(String question, List<String> options, LocalDateTime openUntil, String youtubeUrl, String tournamentId, String userId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId)
@@ -30,7 +32,7 @@ public class BetService {
             throw new IllegalArgumentException("Only admin can create bets");
         }
 
-        String id = UUID.randomUUID().toString();
+        String id = idService.createUUID();
         Bet bet = Bet.builder()
                 .id(id)
                 .question(question)
@@ -40,8 +42,7 @@ public class BetService {
                 .build();
 
         tournament.getBets().add(bet);
-        bets.put(id, bet);
-
+        betRepository.save(bet);
         return toResponse(bet);
     }
 
@@ -49,8 +50,8 @@ public class BetService {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID cannot be null or blank");
         }
-        Optional<Bet> bet = Optional.ofNullable(bets.get(id));
-        return bet.map(this::toResponse);
+        Optional<Bet> optionalBet = betRepository.findById(id);
+        return optionalBet.map(this::toResponse);
     }
 
     public BetResponse toResponse(Bet bet) {

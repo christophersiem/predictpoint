@@ -5,12 +5,11 @@ import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Tip;
 import de.csiem.backend.model.Tournament;
+import de.csiem.backend.repository.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,8 +18,7 @@ import java.util.UUID;
 public class TournamentService {
 
     private final AppUserService appUserService;
-    private final Map<String, Tournament> tournaments = new HashMap<>();
-
+    private final TournamentRepository tournamentRepository;
 
     public TournamentResponse createTournament(String name, LocalDateTime start, int durationDays, String userId) {
         AppUser user = appUserService.getUserById(userId).orElseThrow();
@@ -42,7 +40,7 @@ public class TournamentService {
                 .build();
         tournament.getParticipants().add(user);
         appUserService.addAdministeredTournament(userId, tournament);
-        tournaments.put(id, tournament);
+        tournamentRepository.save(tournament);
         return getTournamentResponse(tournament.getId());
     }
 
@@ -105,7 +103,7 @@ public class TournamentService {
     }
 
     public Optional<Tournament> getTournamentById(String id) {
-        return Optional.ofNullable(tournaments.get(id));
+        return tournamentRepository.findById(id);
     }
 
     private String generateInviteCode() {
