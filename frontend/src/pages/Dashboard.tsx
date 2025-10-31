@@ -2,44 +2,138 @@ import { useState } from 'react';
 import { useUser } from '../UserContext';
 import './Dashboard.css';
 
+const TOURNAMENTS = [
+    {
+        id: 'stream-01',
+        name: 'Roman Stream #1',
+        openBets: [
+            { id: 1, title: 'Welches "', meta: 'Wette: mehr als 3x' },
+            { id: 2, title: 'Zu welcher Blockzeit endet der Stream?', meta: 'Wette: 912372' },
+            { id: 3, title: 'Ist der BTC Preis ($) nach dem Stream höher oder niedriger als zu Beginn?', meta: 'Wette: höher' },
+        ],
+        evaluated: [
+            {
+                id: 11,
+                title: 'Wie oft sagt Roman das Wort "Scharlatan(e)?"',
+                meta: 'Tipp: mind. 1x',
+                result: 'win',
+                resultText: 'gewonnen +14',
+            },
+            {
+                id: 12,
+                title: 'Zu welcher Blockzeit endet der Stream?',
+                meta: 'Tipp: 912811',
+                result: 'loss',
+                resultText: 'verloren',
+            },
+        ],
+        leaderboard: [
+            { name: 'balu', score: '+128' },
+            { name: 'Anna', score: '+95' },
+            { name: 'Marco', score: '+72' },
+            { name: 'Gast 1', score: '+61' },
+            { name: 'Gast 2', score: '+43' },
+        ],
+    },
+    {
+        id: 'community-cup',
+        name: 'Community Cup',
+        openBets: [
+            { id: 4, title: 'Wer gewinnt das Finale?', meta: 'Wette: Team Orange' },
+            { id: 5, title: 'Gibt es ein Overtime Match?', meta: 'Wette: ja' },
+        ],
+        evaluated: [
+            {
+                id: 21,
+                title: 'Wer erzielt das erste Tor?',
+                meta: 'Tipp: Team Blau',
+                result: 'win',
+                resultText: 'gewonnen +22',
+            },
+        ],
+        leaderboard: [
+            { name: 'Lena', score: '+101' },
+            { name: 'Nico', score: '+84' },
+            { name: 'balu', score: '+69' },
+            { name: 'Chris', score: '+47' },
+            { name: 'Gast 2', score: '+30' },
+        ],
+    },
+    {
+        id: 'test-event',
+        name: 'Test-Event',
+        openBets: [],
+        evaluated: [],
+        leaderboard: [],
+    },
+];
+
 export default function Dashboard() {
     const { user } = useUser();
     const [showEvaluated, setShowEvaluated] = useState(false);
+    const [activeTournamentId, setActiveTournamentId] = useState(TOURNAMENTS[0]?.id ?? '');
+
+    const activeTournament =
+        TOURNAMENTS.find((t) => t.id === activeTournamentId) ?? TOURNAMENTS[0];
 
     return (
         <div className="dash-page">
             <header className="dash-topbar">
-                <div>
+                {/* links */}
+                <div className="dash-top-left">
                     <p className="dash-hello">Hallo {user?.name ?? 'Spieler'} 👋</p>
                     <p className="dash-sub">Willkommen zurück bei predictpoint</p>
                 </div>
+
+                {/* mitte – jetzt Buttons */}
+                <div className="dash-top-center">
+                    <div className="tournament-tabs">
+                        {TOURNAMENTS.map((t) => (
+                            <button
+                                key={t.id}
+                                type="button"
+                                onClick={() => setActiveTournamentId(t.id)}
+                                className={
+                                    t.id === activeTournamentId
+                                        ? 'tournament-btn is-active'
+                                        : 'tournament-btn'
+                                }
+                            >
+                                {t.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* rechts – Platz für später */}
+                <div className="dash-top-right" />
             </header>
 
             <div className="dash-layout">
-                {/* MAIN LEFT */}
                 <main className="dash-main">
-                    {/* 1. Offene Wetten */}
                     <section className="card-block">
                         <div className="section-headline">
                             <h2>Offene Wetten</h2>
-                            <p>Diese Tipps laufen aktuell.</p>
+                            <p>
+                                {activeTournament?.name
+                                    ? `Diese Tipps laufen aktuell für "${activeTournament.name}".`
+                                    : 'Diese Tipps laufen aktuell.'}
+                            </p>
                         </div>
                         <div className="open-bets-grid">
-                            <article className="bet-card">
-                                <p className="bet-title">Welches "</p>
-                                <p className="bet-meta">Wette: mehr als 3x</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
-                            <article className="bet-card">
-                                <p className="bet-title">Zu welcher Blockzeit endet der Stream?</p>
-                                <p className="bet-meta">Wette: 912372</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
-                            <article className="bet-card">
-                                <p className="bet-title">Ist der BTC Preis ($) nach dem Stream höher oder niedriger als zu Beginn?</p>
-                                <p className="bet-meta">Wette: höher</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
+                            {activeTournament.openBets.length > 0 ? (
+                                activeTournament.openBets.map((bet) => (
+                                    <article key={bet.id} className="bet-card">
+                                        <p className="bet-title">{bet.title}</p>
+                                        <p className="bet-meta">{bet.meta}</p>
+                                        <p className="bet-status bet-status-open">läuft …</p>
+                                    </article>
+                                ))
+                            ) : (
+                                <p className="empty-hint">
+                                    Für dieses Turnier gibt es gerade keine offenen Wetten.
+                                </p>
+                            )}
                         </div>
                     </section>
 
@@ -55,16 +149,27 @@ export default function Dashboard() {
 
                         {showEvaluated && (
                             <div className="evaluated-list">
-                                <article className="eval-item">
-                                    <p className="eval-title">Wie oft sagt Roman das Wort "Scharlatan(e)?"</p>
-                                    <p className="eval-meta">Tipp: mind. 1x</p>
-                                    <p className="eval-result win">gewonnen +14</p>
-                                </article>
-                                <article className="eval-item">
-                                    <p className="eval-title"> Zu welcher Blockzeit endet der Stream?</p>
-                                    <p className="eval-meta">Tipp: 912811</p>
-                                    <p className="eval-result loss">verloren</p>
-                                </article>
+                                {activeTournament.evaluated.length > 0 ? (
+                                    activeTournament.evaluated.map((item) => (
+                                        <article key={item.id} className="eval-item">
+                                            <p className="eval-title">{item.title}</p>
+                                            <p className="eval-meta">{item.meta}</p>
+                                            <p
+                                                className={
+                                                    item.result === 'win'
+                                                        ? 'eval-result win'
+                                                        : 'eval-result loss'
+                                                }
+                                            >
+                                                {item.resultText}
+                                            </p>
+                                        </article>
+                                    ))
+                                ) : (
+                                    <p className="empty-hint">
+                                        Für dieses Turnier wurden noch keine Wetten ausgewertet.
+                                    </p>
+                                )}
                             </div>
                         )}
                     </section>
@@ -72,16 +177,16 @@ export default function Dashboard() {
                     <section className="card-block">
                         <h2>Wettvorschlag einreichen</h2>
                         <p className="sub">
-                            Schlage eine Frage vor.
+                            Schlage eine Frage vor (für {activeTournament?.name}).
                         </p>
                         <form className="proposal-form">
                             <label>
                                 Frage
-                                <input type="text" placeholder="z. B. " />
+                                <input type="text" placeholder="z. B. Wer scoret zuerst?" />
                             </label>
                             <label>
                                 Dein Tipp
-                                <input type="text" placeholder="z. B. Beide treffen" />
+                                <input type="text" placeholder="z. B. Team Orange" />
                             </label>
                             <label>
                                 Begründung (optional)
@@ -94,37 +199,22 @@ export default function Dashboard() {
                     </section>
                 </main>
 
-                {/* SIDEBAR RIGHT */}
                 <aside className="dash-sidebar">
                     <div className="card-block sidebar-block">
                         <h2>Leaderboard</h2>
-                        <p className="sub">Top 5 Spieler (Dummy)</p>
+                        <p className="sub">Top 5 Spieler – {activeTournament?.name}</p>
                         <ul className="leader-list">
-                            <li>
-                                <span className="rank">1</span>
-                                <span className="name">balu</span>
-                                <span className="score">+128</span>
-                            </li>
-                            <li>
-                                <span className="rank">2</span>
-                                <span className="name">Anna</span>
-                                <span className="score">+95</span>
-                            </li>
-                            <li>
-                                <span className="rank">3</span>
-                                <span className="name">Marco</span>
-                                <span className="score">+72</span>
-                            </li>
-                            <li>
-                                <span className="rank">4</span>
-                                <span className="name">Gast 1</span>
-                                <span className="score">+61</span>
-                            </li>
-                            <li>
-                                <span className="rank">5</span>
-                                <span className="name">Gast 2</span>
-                                <span className="score">+43</span>
-                            </li>
+                            {activeTournament.leaderboard.length > 0 ? (
+                                activeTournament.leaderboard.map((entry, idx) => (
+                                    <li key={entry.name + idx}>
+                                        <span className="rank">{idx + 1}</span>
+                                        <span className="name">{entry.name}</span>
+                                        <span className="score">{entry.score}</span>
+                                    </li>
+                                ))
+                            ) : (
+                                <li className="empty-hint">Noch keine Spieler für dieses Turnier.</li>
+                            )}
                         </ul>
                     </div>
                 </aside>
