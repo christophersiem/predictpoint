@@ -1,12 +1,13 @@
-import {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useUser} from '../UserContext';
+import { useState } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 import '../App.css';
 import AuthLayout from '../components/auth/AuthLayout';
 import LoginCard from '../components/auth/LoginCard';
 import RegisterCard from '../components/auth/RegisterCard';
 import InfoBanner from '../components/auth/InfoBanner';
 import IdModal from '../components/auth/IdModal';
+import { useAuth } from '../hooks/useAuth';
 
 function AuthPage() {
     const [id, setId] = useState('');
@@ -18,49 +19,38 @@ function AuthPage() {
     const [showInfo, setShowInfo] = useState(false);
 
     const navigate = useNavigate();
-    const {setUser} = useUser();
+    const { user, loading } = useUser();
+    const { login, register } = useAuth();
 
-    const handleCreateUser = async (e: React.FormEvent) => {
+    if (loading) {
+        return <div style={{ padding: 24 }}>Lade …</div>;
+    }
+    if (user) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    const handleLoginSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/user', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({name: username}),
-            });
-            if (!response.ok) {
-                throw new Error('Fehler beim Registrieren');
-            }
+            await login(id);
+            navigate('/dashboard');
+        } catch (err) {
+            console.error(err);
+            alert('Einloggen fehlgeschlagen');
+        }
+    };
 
-            const newId = await response.text();
+    const handleRegisterSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const newId = await register(username);
             setId(newId);
             setCreatedId(newId);
             setShowIdModal(true);
             setCopied(false);
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            console.error(err);
             alert('Registrierung fehlgeschlagen');
-        }
-    };
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/api/user/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({id}),
-            });
-            if (!response.ok) {
-                throw new Error('Fehler beim Einloggen');
-            }
-
-            const data = await response.json();
-            setUser({id: data.id, name: data.name});
-            navigate('/dashboard');
-        } catch (error) {
-            console.error(error);
-            alert('Einloggen fehlgeschlagen');
         }
     };
 
@@ -76,35 +66,34 @@ function AuthPage() {
 
     return (
         <AuthLayout>
-            <InfoBanner open={showInfo} onToggle={() => setShowInfo((p) => !p)}/>
-            <>
-                <div className="auth-card">
-                    <LoginCard
-                        id={id}
-                        onIdChange={setId}
-                        onSubmit={handleLogin}
-                    />
+            <InfoBanner open={showInfo} onToggle={() => setShowInfo((p) => !p)} />
 
-                    <div className="divider" aria-hidden/>
+            <div className="auth-card">
+                <LoginCard
+                    id={id}
+                    onIdChange={setId}
+                    onSubmit={handleLoginSubmit}
+                />
 
-                    <RegisterCard
-                        username={username}
-                        onUsernameChange={setUsername}
-                        onSubmit={handleCreateUser}
-                        isOpen={isRegisterOpen}
-                        onToggle={() => setIsRegisterOpen((p) => !p)}
-                    />
-                </div>
+                <div className="divider" aria-hidden />
 
-                {showIdModal && (
-                    <IdModal
-                        id={createdId}
-                        copied={copied}
-                        onCopy={handleCopy}
-                        onClose={() => setShowIdModal(false)}
-                    />
-                )}
-            </>
+                <RegisterCard
+                    username={username}
+                    onUsernameChange={setUsername}
+                    onSubmit={handleRegisterSubmit}
+                    isOpen={isRegisterOpen}
+                    onToggle={() => setIsRegisterOpen((p) => !p)}
+                />
+            </div>
+
+            {showIdModal && (
+                <IdModal
+                    id={createdId}
+                    copied={copied}
+                    onCopy={handleCopy}
+                    onClose={() => setShowIdModal(false)}
+                />
+            )}
         </AuthLayout>
     );
 }

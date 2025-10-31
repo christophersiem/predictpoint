@@ -1,0 +1,113 @@
+.collapse-trigger {
+    width: 100%;
+    background: rgba(247, 147, 26, 0.07);
+    border: 1px solid rgba(247, 147, 26, 0.4);
+    border-radius: 1rem;
+    padding: 0.55rem 0.7rem;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.chevron {
+    transition: transform 0.1s ease;
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+.chevron.rotated {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+.evaluated-list {
+    margin-top: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+/* Basis-Karte */
+.eval-item {
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.01);
+    border-radius: 0.9rem;
+    padding: 0.55rem 0.65rem 0.5rem;
+}
+
+/* Kopfzeile innen */
+.eval-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.eval-title {
+    font-weight: 500;
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.eval-meta {
+    font-size: 0.63rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 0.25rem;
+}
+
+.eval-result {
+    font-size: 0.63rem;
+    margin-top: 0.35rem;
+}
+
+/* Badge oben rechts */
+.eval-badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem 0.2rem;
+    border-radius: 999px;
+    text-transform: lowercase;
+}
+
+/* ===== Farben nach Status ===== */
+
+/* richtig */
+.eval-item--win {
+    border-color: rgba(142, 255, 165, 0.08);
+    background: radial-gradient(circle at top, rgba(46, 185, 113, 0.08), rgba(0,0,0,0));
+}
+.eval-badge--win {
+    background: rgba(82, 211, 138, 0.2);
+    color: #c9ffe1;
+}
+.eval-result--win {
+    color: #a1ffbe;
+}
+
+/* falsch */
+.eval-item--loss {
+    border-color: rgba(255, 65, 65, 0.08);
+    background: radial-gradient(circle at top, rgba(255, 65, 65, 0.04), rgba(0,0,0,0));
+}
+.eval-badge--loss {
+    background: rgba(255, 77, 77, 0.18);
+    color: #ffd2d2;
+}
+.eval-result--loss {
+    color: #ff9292;
+}
+
+/* ausstehend */
+.eval-item--pending {
+    border-color: rgba(255, 197, 111, 0.05);
+}
+.eval-badge--pending {
+    background: rgba(255, 197, 111, 0.14);
+    color: #ffe2b8;
+}
+.eval-result--pending {
+    color: rgba(255, 255, 255, 0.4);
+}

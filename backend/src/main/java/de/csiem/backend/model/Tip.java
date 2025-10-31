@@ -1,5 +1,7 @@
 package de.csiem.backend.model;
 
+import de.csiem.backend.model.AppUser;
+import de.csiem.backend.model.Bet;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,11 +18,11 @@ public class Tip {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bet_id", nullable = false)
     private Bet bet;
 

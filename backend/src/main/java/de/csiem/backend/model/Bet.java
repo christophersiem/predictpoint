@@ -39,7 +39,6 @@ public class Bet {
     private boolean resolved;
     private LocalDateTime openUntil;
     private String youtubeUrl;
-    @Builder.Default
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tip> tips = new ArrayList<>();
 }

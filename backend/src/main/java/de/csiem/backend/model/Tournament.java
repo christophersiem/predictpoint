@@ -22,13 +22,9 @@ public class Tournament {
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private AppUser admin;
-
     private String name;
-
     private String inviteCode;
-
     private LocalDateTime start;
-
     private int durationDays;
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)

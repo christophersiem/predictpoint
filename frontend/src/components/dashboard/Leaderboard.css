@@ -1,0 +1,40 @@
+.sidebar-block h2 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.leader-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+}
+
+.leader-list li {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.rank {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(247, 147, 26, 0.15);
+    display: grid;
+    place-items: center;
+    font-size: 0.6rem;
+    color: #fff;
+}
+
+.name {
+    color: #fff;
+}
+
+.score {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}

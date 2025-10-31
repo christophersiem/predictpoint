@@ -11,12 +11,11 @@ import java.util.List;
 @Builder
 public class BetResponse {
     private String id;
-    private Status status;
     private String question;
     private List<String> options;
-    private int correctOptionIndex;
-    private String correctAnswer;
     private boolean resolved;
+    private int correctOptionIndex;
     private LocalDateTime openUntil;
-    private String youtubeUrl;
+    private Status status;
+    private TipResponse myTip;
 }

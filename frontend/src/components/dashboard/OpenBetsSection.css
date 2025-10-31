@@ -1,0 +1,82 @@
+.open-bets {
+    gap: 1rem;
+}
+
+.open-bets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.bet-card {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(247, 147, 26, 0.04);
+    border-radius: 1rem;
+    padding: 0.75rem 0.8rem 0.65rem;
+    min-height: 155px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.bet-title {
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.bet-meta {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.38);
+}
+
+.bet-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.bet-option {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem 0.4rem;
+    font-size: 0.68rem;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: all 0.12s ease-out;
+}
+
+.bet-option:hover {
+    background: rgba(247, 147, 26, 0.09);
+    border-color: rgba(247, 147, 26, 0.35);
+}
+
+.bet-option.is-selected {
+    background: rgba(247, 147, 26, 0.14);
+    border: 1px solid rgba(247, 147, 26, 0.85);
+    box-shadow: 0 4px 14px rgba(247, 147, 26, 0.25);
+}
+
+.bet-save-hint {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.28);
+}
+
+.bet-footnote {
+    margin-top: 0.8rem;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.28);
+}
+
+@media (max-width: 720px) {
+    .open-bets-grid {
+        grid-template-columns: 1fr;
+    }
+    .bet-card {
+        min-height: auto;
+    }
+}

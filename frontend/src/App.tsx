@@ -1,19 +1,15 @@
-// src/App.tsx
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
-import { useUser } from './UserContext';
-import React from "react";
+import { ProtectedRoute } from './ProtectedRoute';
 
 function App() {
-    const { user } = useUser();
-
     return (
         <Routes>
-            <Route path="/" element={<AuthPage/>} />
+            <Route path="/" element={<AuthPage />} />
             <Route
                 path="/dashboard"
-                element={user ? <Dashboard /> : <Navigate to="/" replace />}
+                element={<ProtectedRoute element={<Dashboard />} />}
             />
         </Routes>
     );
