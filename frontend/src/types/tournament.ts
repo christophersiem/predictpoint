@@ -1,41 +1,45 @@
-type BackendBet = {
+export type BackendTip = {
+    tipId: string;
+    betId: string;
+    selectedOptionIndex: number | null;
+    selectedAnswer: string | null;
+    points: number;
+    correct: boolean | null;
+};
+
+export type BackendBet = {
     id: string;
     question: string;
     options?: string[];
-    openUntil?: string;
     resolved: boolean;
+    correctOptionIndex: number;
+    openUntil?: string | null;
     status: string;
-    correctOptionIndex?: number;
-    myTip?: {
-        tipId: string;
-        betId: string;
-        selectedOptionIndex: number | null;
-        selectedAnswer: string | null;
-        points: number;
-        correct: boolean | null;
-    };
+    myTip?: BackendTip | null;
 };
-
 
 export type BackendTournament = {
     id: string;
+    adminId?: string;
     adminName: string;
     name: string;
     inviteCode: string;
     start: string;
     durationDays: number;
+    participantNames: string[];
     activeBets: BackendBet[];
     pastBets: BackendBet[];
     resolvedBets: BackendBet[];
-    participantNames: string[];
 };
 
 export type UiOpenBet = {
     id: string;
     title: string;
     meta: string;
-    options?: string[];
-
+    options: string[];
+    myTip: {
+        selectedOptionIndex: number | null;
+    } | null;
 };
 
 export type UiEvaluatedBet = {
@@ -44,20 +48,17 @@ export type UiEvaluatedBet = {
     meta: string;
     result: 'win' | 'loss' | 'pending';
     resultText: string;
-};
-
-export type UiLeaderboardEntry = {
-    name: string;
-    score: string;
+    options?: string[];
 };
 
 export type UiTournament = {
     id: string;
     name: string;
-    openBets: {
-        id: string;
-        title: string;
-        meta: string;
-        options?: string[];
-    }
-}
+    adminId?: string;
+    openBets: UiOpenBet[];
+    evaluated: UiEvaluatedBet[];
+    leaderboard: {
+        name: string;
+        score: string;
+    }[];
+};

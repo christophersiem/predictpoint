@@ -1,4 +1,4 @@
-import type {BackendTournament} from "../tournament.ts";
+import type {BackendTournament} from "../types/tournament.ts";
 
 
 export async function fetchMyTournaments(): Promise<BackendTournament[]> {

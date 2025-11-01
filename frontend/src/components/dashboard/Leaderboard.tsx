@@ -1,6 +1,5 @@
-// src/components/dashboard/Leaderboard.tsx
 import React from 'react';
-import type {UiTournament} from "../../tournament.ts";
+import type {UiTournament} from "../../types/tournament.ts";
 import './Leaderboard.css';
 
 type LeaderboardProps = {

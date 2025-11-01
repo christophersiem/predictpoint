@@ -1,10 +1,9 @@
-// src/ProtectedRoute.tsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser } from './context/UserContext.tsx';
 
 type ProtectedRouteProps = {
-    element: React.ReactNode; // nicht JSX.Element
+    element: React.ReactNode;
 };
 
 export function ProtectedRoute({ element }: ProtectedRouteProps): React.ReactNode {
@@ -18,6 +17,5 @@ export function ProtectedRoute({ element }: ProtectedRouteProps): React.ReactNod
         return <Navigate to="/" replace />;
     }
 
-    // React.ReactNode wird zurückgegeben -> passt zum Router
     return element;
 }

@@ -1,4 +1,3 @@
-// src/services/authService.ts
 export type LoginResponse = {
     id: string;
     name: string;

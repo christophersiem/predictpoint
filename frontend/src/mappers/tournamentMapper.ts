@@ -1,72 +1,64 @@
-import type {BackendTournament, UiEvaluatedBet, UiTournament} from "../tournament.ts";
+import type {
+    BackendTournament,
+    BackendBet,
+    UiTournament,
+    UiOpenBet,
+    UiEvaluatedBet,
+} from '../types/tournament';
 
 export function mapBackendToUi(t: BackendTournament): UiTournament {
-    const openBets = (t.activeBets ?? []).map((b): UiTournament['openBets'][number] => ({
+    const openBets: UiOpenBet[] = (t.activeBets ?? []).map((b: BackendBet) => ({
         id: b.id,
         title: b.question,
-        meta: b.status === 'OPEN' ? 'läuft' : b.status,
+        meta: b.status === 'OPEN' ? 'läuft …' : b.status,
+        options: b.options ?? [],
+        myTip: b.myTip
+            ? {
+                selectedOptionIndex:
+                    typeof b.myTip.selectedOptionIndex === 'number'
+                        ? b.myTip.selectedOptionIndex
+                        : null,
+            }
+            : null,
+    }));
+
+    const resolved: UiEvaluatedBet[] = (t.resolvedBets ?? []).map((b) => ({
+        id: b.id,
+        title: b.question,
+        meta: 'Ergebnis vorhanden',
+        result:
+            b.myTip?.correct === true
+                ? 'win'
+                : b.myTip?.correct === false
+                    ? 'loss'
+                    : 'pending',
+        resultText:
+            b.myTip?.correct === true
+                ? 'richtig getippt'
+                : b.myTip?.correct === false
+                    ? 'falsch getippt'
+                    : 'ausgewertet',
         options: b.options ?? [],
     }));
 
-    const resolved = (t.resolvedBets ?? []).map((b): UiEvaluatedBet => {
-        let result: 'win' | 'loss' | 'pending' = 'pending';
-        let resultText = 'ausgewertet';
-
-        if (b.myTip) {
-            if (b.myTip.correct === true) {
-                result = 'win';
-                resultText = 'richtig getippt';
-            } else if (b.myTip.correct === false) {
-                result = 'loss';
-                resultText = 'falsch getippt';
-            } else {
-                // myTip da, aber correct == null (z. B. Bet resolved, aber Option nicht zuordenbar)
-                result = 'pending';
-                resultText = 'ausgewertet';
-            }
-        } else {
-            // user hat gar nicht getippt
-            result = 'pending';
-            resultText = 'du hast nicht getippt';
-        }
-
-        return {
-            id: b.id,
-            title: b.question,
-            meta: `richtige Antwort: ${
-                typeof b.correctOptionIndex === 'number' &&
-                b.correctOptionIndex >= 0 &&
-                b.options &&
-                b.options[b.correctOptionIndex]
-                    ? b.options[b.correctOptionIndex]
-                    : 'unbekannt'
-            }`,
-            result,
-            resultText,
-        };
-    });
-
-    // geschlossene, aber noch nicht ausgewertete
-    const past = (t.pastBets ?? []).map((b): UiEvaluatedBet => ({
+    const past: UiEvaluatedBet[] = (t.pastBets ?? []).map((b) => ({
         id: b.id,
         title: b.question,
         meta: 'geschlossen',
         result: 'pending',
         resultText: 'wartet auf Auswertung',
-    }));
-
-    const evaluated: UiEvaluatedBet[] = [...resolved, ...past];
-
-    const leaderboard = (t.participantNames ?? []).map((name): UiTournament['leaderboard'][number] => ({
-        name,
-        score: '+0',
+        options: b.options ?? [],
     }));
 
     return {
         id: t.id,
         name: t.name,
+        adminId: t.adminId,
         openBets,
-        evaluated,
-        leaderboard,
+        evaluated: [...resolved, ...past],
+        leaderboard: (t.participantNames ?? []).map((name) => ({
+            name,
+            score: '+0',
+        })),
     };
 }

@@ -1,8 +1,7 @@
-// src/components/dashboard/DashboardHeader.tsx
 import React from 'react';
 import './DashboardHeader.css';
 import { useUser } from '../../context/UserContext';
-import type {UiTournament} from "../../tournament.ts";
+import type {UiTournament} from "../../types/tournament.ts";
 
 type DashboardHeaderProps = {
     tournaments: UiTournament[];

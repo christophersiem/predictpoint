@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
-import { fetchMyTournaments } from '../services/tournamentService';
-import type {BackendTournament, UiTournament} from "../tournament.ts";
+import type {BackendTournament, UiEvaluatedBet, UiTournament} from "../types/tournament.ts";
 import {OpenBetsSection} from "../components/dashboard/OpenBetsSection.tsx";
 import {EvaluatedSection} from "../components/dashboard/EvaluatedSection.tsx";
 import {Leaderboard} from "../components/dashboard/Leaderboard.tsx";
@@ -34,8 +33,11 @@ export default function Dashboard() {
         const fetchTournaments = async () => {
             const res = await fetch('/api/tournaments/me', { credentials: 'include' });
             const data: BackendTournament[] = await res.json();
-            const uiData = data.map(mapBackendToUi);   // 👈 HIER benutzen
+            const uiData: UiTournament[] = data.map(mapBackendToUi);
             setTournaments(uiData);
+            if (uiData.length > 0) {
+                setActiveTournamentId(uiData[0].id);
+            }
         };
         fetchTournaments();
     }, []);
@@ -63,12 +65,60 @@ export default function Dashboard() {
 
                     {activeTournament && (
                         <>
-                            <OpenBetsSection tournament={activeTournament} />
+                            <OpenBetsSection
+                                tournament={activeTournament}
+                                onTipSaved={(betId, optionIndex) => {
+                                    setTournaments((prev) =>
+                                        prev.map((t) => {
+                                            if (t.id !== activeTournamentId) return t;
+
+                                            return {
+                                                ...t,
+                                                openBets: t.openBets.map((b) => {
+                                                    if (b.id !== betId) return b;
+                                                    return {
+                                                        ...b,
+                                                        myTip: {
+                                                            selectedOptionIndex: optionIndex,
+                                                        },
+                                                    };
+                                                }),
+                                            };
+                                        })
+                                    );
+                                }}
+                            />
+
 
                             <EvaluatedSection
                                 tournament={activeTournament}
                                 open={showEvaluated}
                                 onToggle={() => setShowEvaluated((p) => !p)}
+                                onBetResolved={(betId, updatedBet) => {
+                                    setTournaments((prev: UiTournament[]) =>
+                                        prev.map((t): UiTournament => {
+                                            if (t.id !== activeTournamentId) {
+                                                return t;
+                                            }
+                                            const normalized: UiEvaluatedBet = {
+                                                id: updatedBet.id,
+                                                title: updatedBet.title,
+                                                meta: updatedBet.meta ?? 'ausgewertet',
+                                                result: updatedBet.result,
+                                                resultText: updatedBet.resultText,
+                                                options: updatedBet.options ?? [],
+                                            };
+
+                                            return {
+                                                ...t,
+                                                evaluated: [
+                                                    normalized,
+                                                    ...t.evaluated.filter((b) => b.id !== betId),
+                                                ],
+                                            };
+                                        })
+                                    );
+                                }}
                             />
                         </>
                     )}

@@ -111,3 +111,36 @@
 .eval-result--pending {
     color: rgba(255, 255, 255, 0.4);
 }
+
+.eval-resolve-box {
+    margin-top: 0.55rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    padding-top: 0.5rem;
+}
+
+.eval-resolve-label {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 0.35rem;
+}
+
+.eval-resolve-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.eval-resolve-btn {
+    background: rgba(255, 163, 43, 0.14);
+    border: 1px solid rgba(255, 177, 71, 0.35);
+    border-radius: 999px;
+    padding: 0.28rem 0.7rem 0.35rem;
+    font-size: 0.62rem;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.12s ease-out;
+}
+
+.eval-resolve-btn:hover {
+    background: rgba(255, 177, 71, 0.25);
+}

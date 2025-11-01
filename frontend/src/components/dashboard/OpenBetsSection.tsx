@@ -1,16 +1,27 @@
-// src/components/dashboard/OpenBetsSection.tsx
-import React, { useState } from 'react';
-import type {UiTournament} from "../../tournament.ts";
+import React, { useEffect, useState } from 'react';
+import type { UiTournament } from '../../types/tournament';
 import './OpenBetsSection.css';
 
 type OpenBetsSectionProps = {
     tournament: UiTournament;
+    onTipSaved?: (betId: string, optionIndex: number) => void;
 };
 
-export function OpenBetsSection({ tournament }: OpenBetsSectionProps) {
+export function OpenBetsSection({ tournament, onTipSaved }: OpenBetsSectionProps) {
     const [selectedByBet, setSelectedByBet] = useState<Record<string, number>>({});
     const [savingBetId, setSavingBetId] = useState<string | null>(null);
     const [savedBetId, setSavedBetId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const initial: Record<string, number> = {};
+        tournament.openBets.forEach((b) => {
+            const idx = b.myTip?.selectedOptionIndex;
+            if (typeof idx === 'number' && idx >= 0) {
+                initial[b.id] = idx;
+            }
+        });
+        setSelectedByBet(initial);
+    }, [tournament]);
 
     const handleSelectOption = async (betId: string, optionIndex: number) => {
         setSelectedByBet((prev) => ({ ...prev, [betId]: optionIndex }));
@@ -30,8 +41,8 @@ export function OpenBetsSection({ tournament }: OpenBetsSectionProps) {
 
             if (!res.ok) {
                 console.error('Tipp speichern fehlgeschlagen', await res.text());
-                // optional: zurücksetzen
             } else {
+                onTipSaved?.(betId, optionIndex);
                 setSavedBetId(betId);
             }
         } catch (e) {
@@ -80,24 +91,17 @@ export function OpenBetsSection({ tournament }: OpenBetsSectionProps) {
                                 </div>
                             )}
 
-                            {/* Feedback */}
-                            {savingBetId === bet.id && (
-                                <p className="bet-save-hint">speichert …</p>
-                            )}
+                            {savingBetId === bet.id && <p className="bet-save-hint">speichert …</p>}
                             {savedBetId === bet.id && (
                                 <p className="bet-save-hint bet-save-hint-ok">Tipp gespeichert</p>
                             )}
                         </article>
                     ))
                 ) : (
-                    <p className="empty-hint">
-                        Für dieses Turnier gibt es gerade keine offenen Wetten.
-                    </p>
+                    <p className="empty-hint">Für dieses Turnier gibt es gerade keine offenen Wetten.</p>
                 )}
-                <p className="bet-footnote">
-                    Du kannst deinen Tipp ändern, solange die Wette offen ist.
-                </p>
 
+                <p className="bet-footnote">Du kannst deinen Tipp ändern, solange die Wette offen ist.</p>
             </div>
         </section>
     );
