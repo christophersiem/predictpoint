@@ -1,7 +1,5 @@
 package de.csiem.backend.model;
 
-import de.csiem.backend.model.AppUser;
-import de.csiem.backend.model.Bet;
 import jakarta.persistence.*;
 import lombok.*;
 

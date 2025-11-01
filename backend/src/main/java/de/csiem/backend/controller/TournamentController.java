@@ -54,7 +54,7 @@ public class TournamentController {
         }
 
         Tournament tournament = tournamentService.getTournamentById(id);
-        TournamentResponse tournamentResponse = tournamentService.toResponse(tournament);
+        TournamentResponse tournamentResponse = tournamentService.toResponse(tournament,userId);
 
         return ResponseEntity.ok(tournamentResponse);
     }

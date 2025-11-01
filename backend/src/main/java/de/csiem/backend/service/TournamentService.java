@@ -2,6 +2,7 @@ package de.csiem.backend.service;
 
 import de.csiem.backend.dto.BetResponse;
 import de.csiem.backend.dto.TournamentResponse;
+import de.csiem.backend.mapper.BetMapper;
 import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Tip;
@@ -21,7 +22,7 @@ public class TournamentService {
 
     private final AppUserService appUserService;
     private final TournamentRepository tournamentRepository;
-
+    private final BetMapper betMapper;
     public TournamentResponse createTournament(String name, LocalDateTime start, int durationDays, String userId) {
         AppUser user = appUserService.getUserById(userId).orElseThrow();
 
@@ -29,6 +30,7 @@ public class TournamentService {
         if (totalTournaments >= 2) {
             throw new IllegalStateException("User can be member of at most 2 tournaments (as admin or participant)");
         }
+
         String id = UUID.randomUUID().toString();
         String inviteCode = generateInviteCode();
 
@@ -42,24 +44,31 @@ public class TournamentService {
                 .build();
         tournament.getParticipants().add(user);
         appUserService.addAdministeredTournament(userId, tournament);
+
         tournamentRepository.save(tournament);
-        return toResponse(tournament);
+
+        return toResponse(tournament, userId);
     }
 
     public void addBet(String tournamentId, Bet bet, String userId) {
         Tournament tournament = getTournamentById(tournamentId);
-        AppUser user = appUserService.getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        AppUser user = appUserService.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (!tournament.getAdmin().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Only admin can add bets");
         }
 
+        bet.setTournament(tournament);
         tournament.getBets().add(bet);
+        tournamentRepository.save(tournament);
     }
+
 
     public void resolveBet(String tournamentId, String betId, int correctOptionIndex, String userId) {
         Tournament tournament = getTournamentById(tournamentId);
-        AppUser user = appUserService.getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        AppUser user = appUserService.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (!tournament.getAdmin().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Only admin can resolve bets");
@@ -77,94 +86,93 @@ public class TournamentService {
         if (correctOptionIndex < 0 || correctOptionIndex >= bet.getOptions().size()) {
             throw new IllegalArgumentException("Invalid correct option index");
         }
+
         bet.setCorrectOptionIndex(correctOptionIndex);
+        bet.setResolved(true);
+        bet.setStatus(de.csiem.backend.model.Status.RESOLVED);
 
         for (Tip tip : bet.getTips()) {
             if (tip.getSelectedOptionIndex() == correctOptionIndex) {
                 tip.setPoints(1);
+            } else {
+                tip.setPoints(0);
             }
         }
 
-        bet.setResolved(true);
+        tournamentRepository.save(tournament);
     }
 
     public void addParticipant(String tournamentId, String userId, String code) {
         Tournament tournament = getTournamentById(tournamentId);
-        AppUser user = appUserService.getUserById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        AppUser user = appUserService.getUserById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         long activeCount = getActiveTournamentsCountForUser(user);
         if (activeCount >= 3) {
             throw new IllegalStateException("User can be member of at most 3 active tournaments");
         }
+
         if (!tournament.getInviteCode().equals(code)) {
             throw new IllegalArgumentException("Invalid invite code");
         }
 
         tournament.getParticipants().add(user);
         user.getMyTournaments().add(tournament);
+        tournamentRepository.save(tournament);
     }
 
     public Tournament getTournamentById(String id) {
-        return tournamentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+        return tournamentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
     }
+
+    public List<TournamentResponse> getTournamentsByAppUser(String userId) {
+        List<Tournament> tournaments = tournamentRepository.findAllByUserId(userId);
+        return tournaments.stream()
+                .map(t -> toResponse(t, userId))
+                .toList();
+    }
+
 
     private String generateInviteCode() {
         return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-
-    public TournamentResponse toResponse(Tournament tournament) {
+    public TournamentResponse toResponse(Tournament tournament, String currentUserId) {
         LocalDateTime now = LocalDateTime.now();
-
-        List<Bet> bets = tournament.getBets();
 
         List<BetResponse> active = new ArrayList<>();
         List<BetResponse> past = new ArrayList<>();
         List<BetResponse> resolved = new ArrayList<>();
 
-        for (Bet bet : bets) {
-            boolean isResolved = bet.isResolved();
-            LocalDateTime openUntil = bet.getOpenUntil();
+        for (Bet bet : tournament.getBets()) {
+            BetResponse betDto = betMapper.toResponse(bet, currentUserId);
 
-            if (isResolved) {
-                resolved.add(toBetResponse(bet));
-                continue;
-            }
-
-            if (openUntil == null || openUntil.isAfter(now)) {
-                active.add(toBetResponse(bet));
+            if (bet.isResolved()) {
+                resolved.add(betDto);
+            } else if (bet.getOpenUntil() != null && bet.getOpenUntil().isBefore(now)) {
+                past.add(betDto);
             } else {
-                past.add(toBetResponse(bet));
+                active.add(betDto);
             }
         }
 
         return TournamentResponse.builder()
                 .id(tournament.getId())
+                .adminId(tournament.getAdmin().getId())
                 .adminName(tournament.getAdmin().getName())
                 .name(tournament.getName())
                 .inviteCode(tournament.getInviteCode())
                 .start(tournament.getStart())
                 .durationDays(tournament.getDurationDays())
-                .activeBets(active)
-                .pastBets(past)
-                .resolvedBets(resolved)
                 .participantNames(
-                        tournament.getParticipants()
-                                .stream()
+                        tournament.getParticipants().stream()
                                 .map(AppUser::getName)
                                 .toList()
                 )
-                .build();
-    }
-
-    private BetResponse toBetResponse(Bet bet) {
-        return BetResponse.builder()
-                .id(bet.getId())
-                .question(bet.getQuestion())
-                .options(bet.getOptions())
-                .openUntil(bet.getOpenUntil())
-                .resolved(bet.isResolved())
-                .status(bet.getStatus())
+                .activeBets(active)
+                .pastBets(past)
+                .resolvedBets(resolved)
                 .build();
     }
 
@@ -182,13 +190,5 @@ public class TournamentService {
     private boolean isActive(Tournament tournament, LocalDateTime now) {
         LocalDateTime end = tournament.getStart().plusDays(tournament.getDurationDays());
         return end.isAfter(now);
-    }
-
-
-    public List<TournamentResponse> getTournamentsByAppUser(String userId) {
-        List<Tournament> tournaments = tournamentRepository.findAllByUserId(userId);
-        return tournaments.stream()
-                .map(this::toResponse)
-                .toList();
     }
 }

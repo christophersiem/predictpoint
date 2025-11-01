@@ -26,15 +26,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CORS AN!
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // preflight immer durchlassen
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // deine API durchlassen
                         .requestMatchers("/api/**").permitAll()
-                        // alles andere darf auch durch (für Dev)
                         .anyRequest().permitAll()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -42,15 +38,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // DEV-CORS: alles auf
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        // wichtig: *Patterns*, damit auch localhost, 127.0.0.1, pinggy usw. gehen
         cfg.setAllowedOriginPatterns(List.of("*"));
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
-        // wir arbeiten mit Session-Cookie
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

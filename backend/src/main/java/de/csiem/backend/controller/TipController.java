@@ -1,15 +1,17 @@
 package de.csiem.backend.controller;
 
 
-
-import de.csiem.backend.dto.TipResponse;
 import de.csiem.backend.dto.TipRequest;
+import de.csiem.backend.dto.TipResponse;
 import de.csiem.backend.service.TipService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/tips")

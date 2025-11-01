@@ -1,9 +1,9 @@
 package de.csiem.backend.service;
 
 import de.csiem.backend.dto.BetResponse;
-import de.csiem.backend.dto.TipResponse;
 import de.csiem.backend.model.*;
 import de.csiem.backend.repository.BetRepository;
+import de.csiem.backend.repository.TipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +19,17 @@ public class BetService {
     private final AppUserService appUserService;
     private final TournamentService tournamentService;
     private final BetRepository betRepository;
+    private final de.csiem.backend.mapper.BetMapper betMapper;
     private final IdService idService;
+    private final TipRepository tipRepository;
 
-    public BetResponse createBet(
-            String question,
-            List<String> options,
-            LocalDateTime openUntil,
-            String youtubeUrl,
-            String tournamentId,
-            String userId
-    ) {
+    public BetResponse createBet(String question,
+                                 List<String> options,
+                                 LocalDateTime openUntil,
+                                 String youtubeUrl,
+                                 String tournamentId,
+                                 String userId) {
+
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
 
         AppUser user = appUserService.getUserById(userId)
@@ -41,7 +42,7 @@ public class BetService {
         Bet bet = Bet.builder()
                 .id(idService.createUUID())
                 .status(Status.OPEN)
-                .tournament(tournament)                      // 👈 wichtig
+                .tournament(tournament)
                 .question(question)
                 .options(options != null ? new ArrayList<>(options) : new ArrayList<>())
                 .openUntil(openUntil)
@@ -49,74 +50,54 @@ public class BetService {
                 .build();
 
         Bet saved = betRepository.save(bet);
-
-        // bidirektional aktuell halten (optional)
         tournament.getBets().add(saved);
 
-        // beim Anlegen gibt es noch keinen Tipp → ohne currentUserId mappen
-        return toResponse(saved, null);
+        return betMapper.toResponse(saved, null);
     }
 
-    /**
-     * Ohne User-Kontext – z.B. für Admin oder interne Aufrufe
-     */
+    public BetResponse resolveBet(String betId, String currentUserId, int correctOptionIndex) {
+        Bet bet = betRepository.findById(betId)
+                .orElseThrow(() -> new IllegalArgumentException("Bet not found"));
+
+        Tournament tournament = bet.getTournament();
+        if (tournament == null) {
+            throw new IllegalStateException("Bet has no tournament");
+        }
+
+        if (!tournament.getAdmin().getId().equals(currentUserId)) {
+            throw new IllegalStateException("Only tournament admin can resolve this bet");
+        }
+
+        if (correctOptionIndex < 0 || correctOptionIndex >= bet.getOptions().size()) {
+            throw new IllegalArgumentException("Correct option index out of range");
+        }
+
+        bet.setCorrectOptionIndex(correctOptionIndex);
+        bet.setResolved(true);
+        bet.setStatus(Status.RESOLVED);
+
+
+        for (Tip tip : bet.getTips()) {
+            boolean isCorrect = tip.getSelectedOptionIndex() == correctOptionIndex;
+            tip.setPoints(isCorrect ? 1 : 0);
+            tipRepository.save(tip);
+        }
+
+        Bet saved = betRepository.save(bet);
+        return betMapper.toResponse(saved, currentUserId);
+    }
+
+    public BetResponse getBetForUser(String betId, String currentUserId) {
+        Bet bet = betRepository.findById(betId)
+                .orElseThrow(() -> new IllegalArgumentException("Bet not found"));
+        return betMapper.toResponse(bet, currentUserId);
+    }
+
     public Optional<BetResponse> getBetById(String id) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID cannot be null or blank");
         }
         return betRepository.findById(id)
-                .map(bet -> toResponse(bet, null));
-    }
-
-    /**
-     * Mit User-Kontext – z.B. Controller: /api/bets/{id}
-     */
-    public Optional<BetResponse> getBetByIdForUser(String id, String currentUserId) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("ID cannot be null or blank");
-        }
-        return betRepository.findById(id)
-                .map(bet -> toResponse(bet, currentUserId));
-    }
-
-    /**
-     * Zentrales Mapping: Bet -> BetResponse, optional mit aktuellem Tipp des Users
-     */
-    public BetResponse toResponse(Bet bet, String currentUserId) {
-
-        TipResponse tipResponse = null;
-
-        if (currentUserId != null) {
-            Tip userTip = bet.getTips().stream()
-                    .filter(t -> t.getUser() != null && currentUserId.equals(t.getUser().getId()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (userTip != null) {
-                Boolean correct = null;
-                if (bet.isResolved() && bet.getCorrectOptionIndex() >= 0) {
-                    correct = userTip.getSelectedOptionIndex() == bet.getCorrectOptionIndex();
-                }
-                tipResponse = TipResponse.builder()
-                        .id(userTip.getId())
-                        .betId(bet.getId())
-                        .selectedOptionIndex(userTip.getSelectedOptionIndex())
-                        .selectedAnswer(userTip.getSelectedAnswer())
-                        .points(userTip.getPoints())
-                        .correct(correct)
-                        .build();
-            }
-        }
-
-        return BetResponse.builder()
-                .id(bet.getId())
-                .question(bet.getQuestion())
-                .options(bet.getOptions())
-                .resolved(bet.isResolved())
-                .correctOptionIndex(bet.getCorrectOptionIndex())
-                .openUntil(bet.getOpenUntil())
-                .status(bet.getStatus())
-                .myTip(tipResponse)
-                .build();
+                .map(bet -> betMapper.toResponse(bet, null));
     }
 }

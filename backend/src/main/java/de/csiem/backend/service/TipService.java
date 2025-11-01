@@ -1,12 +1,10 @@
 package de.csiem.backend.service;
 
-import de.csiem.backend.dto.TipResponse;
 import de.csiem.backend.dto.TipRequest;
-
+import de.csiem.backend.dto.TipResponse;
 import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Tip;
-
 import de.csiem.backend.repository.AppUserRepository;
 import de.csiem.backend.repository.BetRepository;
 import de.csiem.backend.repository.TipRepository;
@@ -66,7 +64,6 @@ public class TipService {
 
         Tip saved = tipRepository.save(tip);
 
-        // falls du schon jetzt "correct" zurückgeben willst:
         Boolean correct = null;
         if (bet.isResolved() && bet.getCorrectOptionIndex() >= 0) {
             correct = saved.getSelectedOptionIndex() == bet.getCorrectOptionIndex();

@@ -5,12 +5,9 @@ import de.csiem.backend.model.AppUser;
 import de.csiem.backend.model.Tournament;
 import de.csiem.backend.repository.AppUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
