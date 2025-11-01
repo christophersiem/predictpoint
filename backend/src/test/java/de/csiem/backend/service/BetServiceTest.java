@@ -2,8 +2,10 @@ package de.csiem.backend.service;
 
 import de.csiem.backend.dto.BetResponse;
 import de.csiem.backend.model.AppUser;
+import de.csiem.backend.model.Bet;
 import de.csiem.backend.model.Status;
 import de.csiem.backend.model.Tournament;
+import de.csiem.backend.repository.BetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,12 +29,16 @@ class BetServiceTest {
 
     @Mock
     private TournamentService tournamentService;
+    @Mock
+    private BetRepository betRepository;
+    @Mock
+    private IdService idService;
 
     private BetService betService;
 
     @BeforeEach
     void setUp() {
-        betService = new BetService(appUserService, tournamentService);
+        betService = new BetService(appUserService, tournamentService, betRepository, idService);
     }
 
     @Test
@@ -53,7 +59,7 @@ class BetServiceTest {
                 .bets(new ArrayList<>())
                 .build();
 
-        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(mockTournament);
         when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         // WHEN
@@ -71,23 +77,6 @@ class BetServiceTest {
         //assertThat(mockTournament.getBets()).contains(result);
     }
 
-    @Test
-    void createBet_withNonExistingTournament_throwsException() {
-        // GIVEN
-        String question = "Test Question";
-        List<String> options = List.of("A", "B");
-        LocalDateTime openUntil = LocalDateTime.now().plusDays(1);
-        String youtubeUrl = "https://youtube.com/test";
-        String tournamentId = "invalid-tournament";
-        String userId = "test-user";
-
-        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.empty());
-
-        // WHEN / THEN
-        assertThatThrownBy(() -> betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Tournament not found");
-    }
 
     @Test
     void createBet_withNonAdminUser_throwsException() {
@@ -107,7 +96,7 @@ class BetServiceTest {
                 .bets(new ArrayList<>())
                 .build();
 
-        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(mockTournament);
         when(appUserService.getUserById(userId)).thenReturn(Optional.of(nonAdmin));
 
         // WHEN / THEN
@@ -133,7 +122,7 @@ class BetServiceTest {
                 .bets(new ArrayList<>())
                 .build();
 
-        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(mockTournament);
         when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
 
         // WHEN
@@ -164,8 +153,10 @@ class BetServiceTest {
                 .bets(new ArrayList<>())
                 .build();
 
-        when(tournamentService.getTournamentById(tournamentId)).thenReturn(Optional.of(mockTournament));
+        when(tournamentService.getTournamentById(tournamentId)).thenReturn(mockTournament);
         when(appUserService.getUserById(userId)).thenReturn(Optional.of(mockUser));
+        when(idService.createUUID()).thenReturn("mock-id");
+        when(betRepository.findById("mock-id")).thenReturn(Optional.of(Bet.builder().options(options).id("mock-id").question(question).build()));
 
         BetResponse createdBet = betService.createBet(question, options, openUntil, youtubeUrl, tournamentId, userId);
         String id = createdBet.getId();
@@ -190,7 +181,8 @@ class BetServiceTest {
 
     @Test
     void getBetById_withNullId_throwsException() {
-        // WHEN / THEN
+
+        //  THEN
         assertThatThrownBy(() -> betService.getBetById(null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("ID cannot be null or blank");

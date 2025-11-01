@@ -1,132 +1,131 @@
-import { useState } from 'react';
-import { useUser } from '../UserContext';
-import './Dashboard.css';
+import { useEffect, useState } from 'react';
+import { useUser } from '../context/UserContext';
+import { DashboardHeader } from '../components/dashboard/DashboardHeader';
+import type {BackendTournament, UiEvaluatedBet, UiTournament} from "../types/tournament.ts";
+import {OpenBetsSection} from "../components/dashboard/OpenBetsSection.tsx";
+import {EvaluatedSection} from "../components/dashboard/EvaluatedSection.tsx";
+import {Leaderboard} from "../components/dashboard/Leaderboard.tsx";
+import '../styles/dashboard-base.css';
+import {mapBackendToUi} from "../mappers/tournamentMapper.ts";
 
 export default function Dashboard() {
-    const { user } = useUser();
+    const { setUser } = useUser();
     const [showEvaluated, setShowEvaluated] = useState(false);
+    const [tournaments, setTournaments] = useState<UiTournament[]>([]);
+    const [activeTournamentId, setActiveTournamentId] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/user/logout', {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setUser(null);
+        }
+    };
+
+    useEffect(() => {
+        const fetchTournaments = async () => {
+            const res = await fetch('/api/tournaments/me', { credentials: 'include' });
+            const data: BackendTournament[] = await res.json();
+            const uiData: UiTournament[] = data.map(mapBackendToUi);
+            setTournaments(uiData);
+            if (uiData.length > 0) {
+                setActiveTournamentId(uiData[0].id);
+            }
+        };
+        fetchTournaments();
+    }, []);
+
+    const activeTournament =
+        tournaments.find((t) => t.id === activeTournamentId) ?? tournaments[0];
 
     return (
         <div className="dash-page">
-            <header className="dash-topbar">
-                <div>
-                    <p className="dash-hello">Hallo {user?.name ?? 'Spieler'} 👋</p>
-                    <p className="dash-sub">Willkommen zurück bei predictpoint</p>
-                </div>
-            </header>
+            <DashboardHeader
+                tournaments={tournaments}
+                activeTournamentId={activeTournamentId}
+                onSelect={setActiveTournamentId}
+                loading={loading}
+                onLogout={handleLogout}
+            />
 
             <div className="dash-layout">
-                {/* MAIN LEFT */}
                 <main className="dash-main">
-                    {/* 1. Offene Wetten */}
-                    <section className="card-block">
-                        <div className="section-headline">
-                            <h2>Offene Wetten</h2>
-                            <p>Diese Tipps laufen aktuell.</p>
-                        </div>
-                        <div className="open-bets-grid">
-                            <article className="bet-card">
-                                <p className="bet-title">Welches "</p>
-                                <p className="bet-meta">Wette: mehr als 3x</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
-                            <article className="bet-card">
-                                <p className="bet-title">Zu welcher Blockzeit endet der Stream?</p>
-                                <p className="bet-meta">Wette: 912372</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
-                            <article className="bet-card">
-                                <p className="bet-title">Ist der BTC Preis ($) nach dem Stream höher oder niedriger als zu Beginn?</p>
-                                <p className="bet-meta">Wette: höher</p>
-                                <p className="bet-status bet-status-open">läuft …</p>
-                            </article>
-                        </div>
-                    </section>
+                    {error && <p className="error-hint">{error}</p>}
 
-                    <section className="card-block">
-                        <button
-                            type="button"
-                            className="collapse-trigger"
-                            onClick={() => setShowEvaluated((p) => !p)}
-                        >
-                            Ausgewertete Wetten
-                            <span className={showEvaluated ? 'chevron rotated' : 'chevron'}>⌃</span>
-                        </button>
+                    {!activeTournament && !loading && (
+                        <p className="empty-hint">Du bist in noch keiner Runde.</p>
+                    )}
 
-                        {showEvaluated && (
-                            <div className="evaluated-list">
-                                <article className="eval-item">
-                                    <p className="eval-title">Wie oft sagt Roman das Wort "Scharlatan(e)?"</p>
-                                    <p className="eval-meta">Tipp: mind. 1x</p>
-                                    <p className="eval-result win">gewonnen +14</p>
-                                </article>
-                                <article className="eval-item">
-                                    <p className="eval-title"> Zu welcher Blockzeit endet der Stream?</p>
-                                    <p className="eval-meta">Tipp: 912811</p>
-                                    <p className="eval-result loss">verloren</p>
-                                </article>
-                            </div>
-                        )}
-                    </section>
+                    {activeTournament && (
+                        <>
+                            <OpenBetsSection
+                                tournament={activeTournament}
+                                onTipSaved={(betId, optionIndex) => {
+                                    setTournaments((prev) =>
+                                        prev.map((t) => {
+                                            if (t.id !== activeTournamentId) return t;
 
-                    <section className="card-block">
-                        <h2>Wettvorschlag einreichen</h2>
-                        <p className="sub">
-                            Schlage eine Frage vor.
-                        </p>
-                        <form className="proposal-form">
-                            <label>
-                                Frage
-                                <input type="text" placeholder="z. B. " />
-                            </label>
-                            <label>
-                                Dein Tipp
-                                <input type="text" placeholder="z. B. Beide treffen" />
-                            </label>
-                            <label>
-                                Begründung (optional)
-                                <textarea rows={3} placeholder="Warum ist das eine gute Wette?"></textarea>
-                            </label>
-                            <button type="button" className="primary-btn">
-                                Vorschlag senden
-                            </button>
-                        </form>
-                    </section>
+                                            return {
+                                                ...t,
+                                                openBets: t.openBets.map((b) => {
+                                                    if (b.id !== betId) return b;
+                                                    return {
+                                                        ...b,
+                                                        myTip: {
+                                                            selectedOptionIndex: optionIndex,
+                                                        },
+                                                    };
+                                                }),
+                                            };
+                                        })
+                                    );
+                                }}
+                            />
+
+
+                            <EvaluatedSection
+                                tournament={activeTournament}
+                                open={showEvaluated}
+                                onToggle={() => setShowEvaluated((p) => !p)}
+                                onBetResolved={(betId, updatedBet) => {
+                                    setTournaments((prev: UiTournament[]) =>
+                                        prev.map((t): UiTournament => {
+                                            if (t.id !== activeTournamentId) {
+                                                return t;
+                                            }
+                                            const normalized: UiEvaluatedBet = {
+                                                id: updatedBet.id,
+                                                title: updatedBet.title,
+                                                meta: updatedBet.meta ?? 'ausgewertet',
+                                                result: updatedBet.result,
+                                                resultText: updatedBet.resultText,
+                                                options: updatedBet.options ?? [],
+                                            };
+
+                                            return {
+                                                ...t,
+                                                evaluated: [
+                                                    normalized,
+                                                    ...t.evaluated.filter((b) => b.id !== betId),
+                                                ],
+                                            };
+                                        })
+                                    );
+                                }}
+                            />
+                        </>
+                    )}
                 </main>
 
-                {/* SIDEBAR RIGHT */}
                 <aside className="dash-sidebar">
-                    <div className="card-block sidebar-block">
-                        <h2>Leaderboard</h2>
-                        <p className="sub">Top 5 Spieler (Dummy)</p>
-                        <ul className="leader-list">
-                            <li>
-                                <span className="rank">1</span>
-                                <span className="name">balu</span>
-                                <span className="score">+128</span>
-                            </li>
-                            <li>
-                                <span className="rank">2</span>
-                                <span className="name">Anna</span>
-                                <span className="score">+95</span>
-                            </li>
-                            <li>
-                                <span className="rank">3</span>
-                                <span className="name">Marco</span>
-                                <span className="score">+72</span>
-                            </li>
-                            <li>
-                                <span className="rank">4</span>
-                                <span className="name">Gast 1</span>
-                                <span className="score">+61</span>
-                            </li>
-                            <li>
-                                <span className="rank">5</span>
-                                <span className="name">Gast 2</span>
-                                <span className="score">+43</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <Leaderboard tournament={activeTournament} />
                 </aside>
             </div>
         </div>

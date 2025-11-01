@@ -3,6 +3,7 @@ package de.csiem.backend.controller;
 import de.csiem.backend.dto.CreateTournamentRequest;
 import de.csiem.backend.dto.JoinTournamentRequest;
 import de.csiem.backend.dto.TournamentResponse;
+import de.csiem.backend.model.Tournament;
 import de.csiem.backend.service.TournamentService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/tournaments")
+@RequestMapping("/api/tournaments")
 public class TournamentController {
 
     private final TournamentService tournamentService;
@@ -51,7 +53,20 @@ public class TournamentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        TournamentResponse response = tournamentService.getTournamentResponse(id);
-        return response != null ? ResponseEntity.ok(response) : ResponseEntity.notFound().build();
+        Tournament tournament = tournamentService.getTournamentById(id);
+        TournamentResponse tournamentResponse = tournamentService.toResponse(tournament);
+
+        return ResponseEntity.ok(tournamentResponse);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<TournamentResponse>> getMyTournaments(HttpSession session) {
+        String userId = (String) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<TournamentResponse> responses = tournamentService.getTournamentsByAppUser(userId);
+        return ResponseEntity.ok(responses);
     }
 }

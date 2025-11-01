@@ -17,7 +17,10 @@ public class TournamentResponse {
     private String name;
     private String inviteCode;
     private LocalDateTime start;
-    private final List<String> bets;
     private int durationDays;
     private List<String> participantNames;
+    private List<BetResponse> activeBets;
+    private List<BetResponse> pastBets;
+    private List<BetResponse> resolvedBets;
+
 }

@@ -1,26 +1,42 @@
 package de.csiem.backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Builder
+@Entity
+@Table(name = "tournaments")
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Tournament {
-    private final String id;
-    private final AppUser admin;
-    private final String name;
-    private final String inviteCode;
-    private final LocalDateTime start;
-    private final int durationDays;
-    @Builder.Default
-    private final List<Bet> bets = new ArrayList<>();
-    @Builder.Default
-    private final List<AppUser> participants = new ArrayList<>();
 
+    @Id
+    private String id;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private AppUser admin;
+    private String name;
+    private String inviteCode;
+    private LocalDateTime start;
+    private int durationDays;
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Bet> bets = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tournament_participants",
+            joinColumns = @JoinColumn(name = "tournament_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @Builder.Default
+    private List<AppUser> participants = new ArrayList<>();
 }

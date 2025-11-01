@@ -1,27 +1,35 @@
 package de.csiem.backend.service;
 
 import de.csiem.backend.dto.BetResponse;
-import de.csiem.backend.model.AppUser;
-import de.csiem.backend.model.Bet;
-import de.csiem.backend.model.Tournament;
-import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Lazy;
+import de.csiem.backend.dto.TipResponse;
+import de.csiem.backend.model.*;
+import de.csiem.backend.repository.BetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BetService {
 
     private final AppUserService appUserService;
     private final TournamentService tournamentService;
-    private final Map<String, Bet> bets = new HashMap<>();
+    private final BetRepository betRepository;
+    private final IdService idService;
 
-    public BetResponse createBet(String question, List<String> options, LocalDateTime openUntil, String youtubeUrl, String tournamentId, String userId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId)
-                .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+    public BetResponse createBet(
+            String question,
+            List<String> options,
+            LocalDateTime openUntil,
+            String youtubeUrl,
+            String tournamentId,
+            String userId
+    ) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
 
         AppUser user = appUserService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -30,44 +38,85 @@ public class BetService {
             throw new IllegalArgumentException("Only admin can create bets");
         }
 
-        String id = UUID.randomUUID().toString();
         Bet bet = Bet.builder()
-                .id(id)
+                .id(idService.createUUID())
+                .status(Status.OPEN)
+                .tournament(tournament)                      // 👈 wichtig
                 .question(question)
-                .options(new ArrayList<>(options))
+                .options(options != null ? new ArrayList<>(options) : new ArrayList<>())
                 .openUntil(openUntil)
                 .youtubeUrl(youtubeUrl)
                 .build();
 
-        tournament.getBets().add(bet);
-        bets.put(id, bet);
+        Bet saved = betRepository.save(bet);
 
-        return toResponse(bet);
+        // bidirektional aktuell halten (optional)
+        tournament.getBets().add(saved);
+
+        // beim Anlegen gibt es noch keinen Tipp → ohne currentUserId mappen
+        return toResponse(saved, null);
     }
 
+    /**
+     * Ohne User-Kontext – z.B. für Admin oder interne Aufrufe
+     */
     public Optional<BetResponse> getBetById(String id) {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("ID cannot be null or blank");
         }
-        Optional<Bet> bet = Optional.ofNullable(bets.get(id));
-        return bet.map(this::toResponse);
+        return betRepository.findById(id)
+                .map(bet -> toResponse(bet, null));
     }
 
-    public BetResponse toResponse(Bet bet) {
-        if (bet == null) {
-            throw new IllegalArgumentException("Bet cannot be null");
+    /**
+     * Mit User-Kontext – z.B. Controller: /api/bets/{id}
+     */
+    public Optional<BetResponse> getBetByIdForUser(String id, String currentUserId) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("ID cannot be null or blank");
         }
+        return betRepository.findById(id)
+                .map(bet -> toResponse(bet, currentUserId));
+    }
+
+    /**
+     * Zentrales Mapping: Bet -> BetResponse, optional mit aktuellem Tipp des Users
+     */
+    public BetResponse toResponse(Bet bet, String currentUserId) {
+
+        TipResponse tipResponse = null;
+
+        if (currentUserId != null) {
+            Tip userTip = bet.getTips().stream()
+                    .filter(t -> t.getUser() != null && currentUserId.equals(t.getUser().getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (userTip != null) {
+                Boolean correct = null;
+                if (bet.isResolved() && bet.getCorrectOptionIndex() >= 0) {
+                    correct = userTip.getSelectedOptionIndex() == bet.getCorrectOptionIndex();
+                }
+                tipResponse = TipResponse.builder()
+                        .id(userTip.getId())
+                        .betId(bet.getId())
+                        .selectedOptionIndex(userTip.getSelectedOptionIndex())
+                        .selectedAnswer(userTip.getSelectedAnswer())
+                        .points(userTip.getPoints())
+                        .correct(correct)
+                        .build();
+            }
+        }
+
         return BetResponse.builder()
                 .id(bet.getId())
-                .status(bet.getStatus())
                 .question(bet.getQuestion())
                 .options(bet.getOptions())
-                .correctOptionIndex(bet.getCorrectOptionIndex())
                 .resolved(bet.isResolved())
+                .correctOptionIndex(bet.getCorrectOptionIndex())
                 .openUntil(bet.getOpenUntil())
-                .youtubeUrl(bet.getYoutubeUrl())
+                .status(bet.getStatus())
+                .myTip(tipResponse)
                 .build();
     }
-
-
 }

@@ -1,0 +1,44 @@
+/* Dashboard Grundlayout */
+.dash-page {
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #0b0d10 0%, #030405 80%);
+    display: flex;
+    flex-direction: column;
+}
+
+/* grid: main + sidebar */
+.dash-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(620px, 1.1fr) 320px;
+    gap: 1.5rem;
+    padding: 1.5rem 2.2rem 2rem;
+}
+
+/* main content */
+.dash-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+/* =========================
+   3) Content-Grid: auf Mobile EINspaltig erzwingen
+   ========================= */
+@media (max-width: 1024px) {
+    .dash-layout {
+        grid-template-columns: 1fr;
+        padding: 1rem 1.15rem 1.5rem;
+    }
+
+    .dash-main,
+    .dash-sidebar {
+        gap: 1rem;
+    }
+}
+
+/* Hinweis-Text für leere Listen (falls nicht da) */
+.empty-hint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+}

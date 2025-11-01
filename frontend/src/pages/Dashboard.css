@@ -11,9 +11,26 @@
     height: 62px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
     padding: 0 2.2rem;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
+    column-gap: 1rem;
+    position: relative;   /* <-- neu */
+}
+
+.dash-top-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dash-top-center {
+    display: flex;
+    justify-content: center;
+}
+
+.dash-top-right {
+    justify-self: end;
 }
 
 .dash-hello {
@@ -26,6 +43,44 @@
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.35);
 }
+
+/* Dropdown Styling */
+.tournament-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    max-width: 520px;
+}
+
+.tournament-btn {
+    background: rgba(247, 147, 26, 0.1);
+    border: 1px solid rgba(247, 147, 26, 0.25);
+    color: #fff;
+    border-radius: 0.6rem;
+    padding: 0.35rem 0.8rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+    white-space: nowrap;
+}
+
+.tournament-btn:hover {
+    background: rgba(247, 147, 26, 0.25);
+}
+
+.tournament-btn.is-active {
+    background: linear-gradient(95deg, #f7931a 0%, #ffb347 100%);
+    border-color: rgba(255, 177, 71, 0.12);
+    box-shadow: 0 7px 20px rgba(247, 147, 26, 0.35);
+}
+
+/* Hinweis-Text für leere Listen (falls nicht da) */
+.empty-hint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
 
 /* grid: main + sidebar */
 .dash-layout {
@@ -246,13 +301,174 @@
     font-weight: 500;
 }
 
-/* responsive */
+/* =========================
+   1) Topbar: mobile untereinander
+   ========================= */
 @media (max-width: 1024px) {
-    .dash-layout {
+    .dash-topbar {
         grid-template-columns: 1fr;
+        row-gap: 0.7rem;
+        height: auto;
+        padding: 1rem 1.15rem 1rem;
     }
 
-    .dash-sidebar {
-        order: 2;
+    .logout-btn {
+        top: 0.8rem;
+        right: 1rem;
     }
+
+    /* Turnier-Buttons sollen nicht links “kleben”, sondern volle Breite nutzen */
+    .dash-top-center {
+        justify-content: flex-start;
+    }
+}
+
+/* =========================
+   2) Turnier-Buttons: horizontal scrollen
+   ========================= */
+.tournament-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    max-width: 520px;
+}
+
+@media (max-width: 520px) {
+    .tournament-tabs {
+        flex-wrap: nowrap;          /* nicht umbrechen */
+        overflow-x: auto;           /* scrollen */
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem;
+        max-width: 100%;
+    }
+
+    .tournament-tabs::-webkit-scrollbar {
+        display: none;              /* iOS / Safari */
+    }
+
+    .tournament-btn {
+        flex: 0 0 auto;             /* Breite nicht schrumpfen */
+    }
+}
+
+/* Buttons selbst – wie dein “Vorschlag senden” */
+.tournament-btn {
+    background: rgba(247, 147, 26, 0.1);
+    border: 1px solid rgba(247, 147, 26, 0.25);
+    color: #fff;
+    border-radius: 0.6rem;
+    padding: 0.35rem 0.8rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+    white-space: nowrap;
+}
+.tournament-btn.is-active {
+    background: linear-gradient(95deg, #f7931a 0%, #ffb347 100%);
+    border-color: rgba(255, 177, 71, 0.12);
+    box-shadow: 0 7px 20px rgba(247, 147, 26, 0.35);
+}
+
+/* =========================
+   3) Content-Grid: auf Mobile EINspaltig erzwingen
+   ========================= */
+/* dein ursprüngliches Grid hat minmax(620px, 1.1fr) – das ist fürs Handy zu groß,
+   deswegen hier drunter nochmal überschreiben */
+@media (max-width: 1024px) {
+    .dash-layout {
+        grid-template-columns: 1fr;     /* Sidebar geht nach unten */
+        padding: 1rem 1.15rem 1.5rem;   /* weniger Rand rechts/links */
+    }
+
+    /* damit Main & Sidebar den gleichen Abstand haben */
+    .dash-main,
+    .dash-sidebar {
+        gap: 1rem;
+    }
+}
+
+/* =========================
+   4) Karten sollen auf kleinen Screens richtig “aufgehen”
+   ========================= */
+@media (max-width: 520px) {
+    .card-block {
+        border-radius: 1rem;
+        padding: 1rem 0.9rem 1rem;
+    }
+
+    .open-bets-grid {
+        grid-template-columns: 1fr; /* jede Wette untereinander */
+    }
+}
+
+.logout-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    background: rgba(247, 147, 26, 0.9);
+    border: 1px solid rgba(255, 203, 131, 0.35);
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    color: #0b0d10;
+    cursor: pointer;
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 16px rgba(247, 147, 26, 0.35);
+}
+
+.logout-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(247, 147, 26, 0.55);
+}
+
+.bet-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+}
+
+.bet-option {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem 0.4rem;
+    color: #fff;
+    font-size: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: all 0.12s ease-out;
+}
+
+.bet-option:hover {
+    background: rgba(247, 147, 26, 0.12);
+    border-color: rgba(247, 147, 26, 0.35);
+}
+
+.bet-option.is-selected {
+    background: rgba(247, 147, 26, 0.08);
+    border: 1px solid rgba(247, 147, 26, 0.85);
+    box-shadow: 0 5px 15px rgba(247, 147, 26, 0.28);
+}
+
+.bet-save-hint {
+    margin-top: 0.45rem;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.bet-save-hint-ok {
+    color: rgba(149, 222, 166, 0.85);
+}
+
+.bet-footnote {
+    margin-top: 0.5rem;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.18);
 }

@@ -1,25 +1,37 @@
 package de.csiem.backend.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Builder
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AppUser {
-    private final String id;
-    private final String hashedLoginId;
-    private final String name;
+
+    @Id
+    private String id;
+    @Column(unique = true)
+    private String hashedLoginId;
+
+    private String name;
+
     @Builder.Default
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "admin")
     @Builder.Default
-    private final List<Tournament> administeredTournaments = new ArrayList<>();
+    private List<Tournament> administeredTournaments = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "participants")
     @Builder.Default
-    private final List<Tournament> myTournaments = new ArrayList<>();
+    private List<Tournament> myTournaments = new ArrayList<>();
 }
