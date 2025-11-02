@@ -6,7 +6,7 @@
     flex-direction: column;
 }
 
-/* zentrierter Content-Container */
+/* äußerer Container */
 .dash-layout {
     flex: 1;
     display: grid;
@@ -15,7 +15,7 @@
     padding: 1.6rem 1.8rem 2.6rem;
 }
 
-/* innen noch mal begrenzen */
+/* innerer Wrapper: macht bisher 2 Spalten (main + sidebar) */
 .dash-layout > * {
     max-width: 1180px;
     width: 100%;
@@ -25,14 +25,15 @@
     gap: 1.5rem;
 }
 
-/* main content column */
+/* weil wir das Sidebar-Konzept unten NICHT mehr wollen,
+   kannst du dash-sidebar in Dashboard.tsx entfernen,
+   aber wir lassen die Styles mal drin */
 .dash-main {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
 
-/* sidebar column */
 .dash-sidebar {
     display: flex;
     flex-direction: column;
@@ -67,13 +68,34 @@
     color: rgba(255, 255, 255, 0.3);
 }
 
-/* Desktop → Mobile */
+/* 👇👇👇 NEU: unsere 2-Spalten-Reihe unterhalb der offenen Wetten */
+.dash-bottom-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) 320px;  /* links breit, rechts schmal */
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-top: 1.25rem;
+}
+
+.dash-bottom-row .card-block {
+    height: 100%;
+}
+
+/* === Breakpoints === */
+
+/* Desktop -> Tablet: äußeres Grid auf 1 Spalte */
 @media (max-width: 1100px) {
     .dash-layout > * {
         grid-template-columns: 1fr;
     }
+
+    /* und unsere untere Reihe auch untereinander */
+    .dash-bottom-row {
+        grid-template-columns: 1fr;
+    }
 }
 
+/* kleines Tablet / Phone */
 @media (max-width: 720px) {
     .dash-layout {
         padding: 1.1rem 1rem 2.1rem;
