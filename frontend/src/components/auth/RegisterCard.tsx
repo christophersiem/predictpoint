@@ -15,7 +15,6 @@ export default function RegisterCard({
                                      }: RegisterCardProps) {
     return (
         <div className={`auth-right ${isOpen ? 'is-open' : ''}`}>
-            {/* Mobile toggle */}
             <button type="button" className="mobile-register-toggle" onClick={onToggle}>
                 Neu hier?
                 <span className={`chevron ${isOpen ? 'rotated' : ''}`}>⌃</span>

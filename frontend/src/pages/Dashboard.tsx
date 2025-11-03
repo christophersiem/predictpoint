@@ -1,10 +1,9 @@
-import {useState} from 'react';
-import {useOutletContext} from 'react-router-dom';
-import type {AppOutletCtx} from '../layout/AppShell';
-import {OpenBetsSection} from '../components/dashboard/OpenBetsSection';
-import {EvaluatedSection} from '../components/dashboard/EvaluatedSection';
-import {Leaderboard} from '../components/dashboard/Leaderboard';
-import '../styles/dashboard-layout.css';
+import { useState } from 'react';
+import { OpenBetsSection } from '../components/dashboard/OpenBetsSection';
+import { EvaluatedSection } from '../components/dashboard/EvaluatedSection';
+import { Leaderboard } from '../components/dashboard/Leaderboard';
+import './Dashboard.css';
+import { useMyTournaments } from '../hooks/useMyTournaments';
 
 export default function Dashboard() {
     const {
@@ -14,23 +13,29 @@ export default function Dashboard() {
         error,
         markTip,
         applyResolvedBet,
-    } = useOutletContext<AppOutletCtx>();
+    } = useMyTournaments();
 
     const [showEvaluated, setShowEvaluated] = useState(false);
-    const activeTournament = tournaments.find((t) => t.id === activeId) ?? tournaments[0];
+
+    const activeTournament =
+        tournaments.find((t) => t.id === activeId) ?? tournaments[0];
 
     if (error) return <p className="error-hint">{error}</p>;
-    if (!activeTournament && !loading) return <p className="empty-hint">Du bist in noch keiner Runde.</p>;
+    if (!activeTournament && !loading)
+        return <p className="empty-hint">Du bist in noch keiner Runde.</p>;
+
     if (!activeTournament) return null;
 
     return (
-        <>
-            <OpenBetsSection
-                tournament={activeTournament}
-                onTipSaved={(betId, optionIndex) => markTip(activeId, betId, optionIndex)}
-            />
+        <div className="dash-two-cols">
+            <div className="dash-left-col">
+                <OpenBetsSection
+                    tournament={activeTournament}
+                    onTipSaved={(betId, optionIndex) =>
+                        markTip?.(activeId, betId, optionIndex)
+                    }
+                />
 
-            <div className="dash-two-cols" style={{ marginTop: '1.25rem' }}>
                 <EvaluatedSection
                     tournament={activeTournament}
                     open={showEvaluated}
@@ -39,8 +44,11 @@ export default function Dashboard() {
                         applyResolvedBet?.(activeId, betId, updated)
                     }
                 />
+            </div>
+
+            <div className="dash-right-col">
                 <Leaderboard tournament={activeTournament} />
             </div>
-        </>
+        </div>
     );
 }

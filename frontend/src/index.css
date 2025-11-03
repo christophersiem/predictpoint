@@ -4,7 +4,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* wir lassen dark/light weg, weil deine App eh dunkel ist */
   color: #fff;
   background-color: #000;
 
@@ -13,7 +12,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Links – brauchst du vermutlich gerade gar nicht, aber lassen wir drin */
 a {
   font-weight: 500;
   color: #646cff;
@@ -23,7 +21,6 @@ a:hover {
   color: #535bf2;
 }
 
-/* WICHTIG: kein flex + kein zentrieren mehr */
 body {
   margin: 0;
   min-width: 320px;
@@ -33,18 +30,15 @@ body {
   background: #000;
 }
 
-/* Root soll die ganze Breite bekommen */
 #root {
   width: 100%;
   height: 100%;
 }
 
-/* Buttons – kannst du auch entfernen, wenn du alles in App.css machst */
 button {
   font-family: inherit;
 }
 
-/* falls du später wieder light-mode willst */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

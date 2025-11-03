@@ -31,7 +31,6 @@
     gap: 0.55rem;
 }
 
-/* Basis-Karte */
 .eval-item {
     background: rgba(0, 0, 0, 0.18);
     border: 1px solid rgba(255, 255, 255, 0.01);
@@ -39,7 +38,6 @@
     padding: 0.55rem 0.65rem 0.5rem;
 }
 
-/* Kopfzeile innen */
 .eval-head {
     display: flex;
     justify-content: space-between;
@@ -64,7 +62,6 @@
     margin-top: 0.35rem;
 }
 
-/* Badge oben rechts */
 .eval-badge {
     font-size: 0.6rem;
     padding: 0.15rem 0.5rem 0.2rem;
@@ -72,9 +69,7 @@
     text-transform: lowercase;
 }
 
-/* ===== Farben nach Status ===== */
 
-/* richtig */
 .eval-item--win {
     border-color: rgba(142, 255, 165, 0.08);
     background: radial-gradient(circle at top, rgba(46, 185, 113, 0.08), rgba(0,0,0,0));
@@ -87,7 +82,6 @@
     color: #a1ffbe;
 }
 
-/* falsch */
 .eval-item--loss {
     border-color: rgba(255, 65, 65, 0.08);
     background: radial-gradient(circle at top, rgba(255, 65, 65, 0.04), rgba(0,0,0,0));
@@ -100,7 +94,6 @@
     color: #ff9292;
 }
 
-/* ausstehend */
 .eval-item--pending {
     border-color: rgba(255, 197, 111, 0.05);
 }
