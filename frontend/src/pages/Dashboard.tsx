@@ -1,83 +1,46 @@
-import { useEffect, useState } from 'react';
-import { useUser } from '../context/UserContext';
-import { DashboardHeader } from '../components/dashboard/DashboardHeader';
-import {OpenBetsSection} from "../components/dashboard/OpenBetsSection.tsx";
-import {EvaluatedSection} from "../components/dashboard/EvaluatedSection.tsx";
-import {Leaderboard} from "../components/dashboard/Leaderboard.tsx";
-import '../styles/dashboard-base.css';
-import {useMyTournaments} from "../hooks/useMyTournaments.ts";
+import {useState} from 'react';
+import {useOutletContext} from 'react-router-dom';
+import type {AppOutletCtx} from '../layout/AppShell';
+import {OpenBetsSection} from '../components/dashboard/OpenBetsSection';
+import {EvaluatedSection} from '../components/dashboard/EvaluatedSection';
+import {Leaderboard} from '../components/dashboard/Leaderboard';
+import '../styles/dashboard-layout.css';
 
 export default function Dashboard() {
-    const { setUser } = useUser();
     const {
         tournaments,
         activeId,
-        setActiveId,
         loading,
         error,
         markTip,
         applyResolvedBet,
-    } = useMyTournaments();
+    } = useOutletContext<AppOutletCtx>();
+
     const [showEvaluated, setShowEvaluated] = useState(false);
+    const activeTournament = tournaments.find((t) => t.id === activeId) ?? tournaments[0];
 
-
-    const handleLogout = async () => {
-        try {
-            await fetch('/api/user/logout', {
-                method: 'POST',
-                credentials: 'include',
-            });
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setUser(null);
-        }
-    };
-
-
-    const activeTournament = tournaments.find((t) => t.id === activeId);
+    if (error) return <p className="error-hint">{error}</p>;
+    if (!activeTournament && !loading) return <p className="empty-hint">Du bist in noch keiner Runde.</p>;
+    if (!activeTournament) return null;
 
     return (
-        <div className="dash-page">
-            <DashboardHeader
-                tournaments={tournaments}
-                activeTournamentId={activeId}
-                onSelect={setActiveId}
-                loading={loading}
-                onLogout={handleLogout}
+        <>
+            <OpenBetsSection
+                tournament={activeTournament}
+                onTipSaved={(betId, optionIndex) => markTip(activeId, betId, optionIndex)}
             />
 
-            <div className="dash-layout">
-                <main className="dash-main">
-                    {error && <p className="error-hint">{error}</p>}
-
-                    {!activeTournament && !loading && (
-                        <p className="empty-hint">Du bist in noch keiner Runde.</p>
-                    )}
-
-                    {activeTournament && (
-                        <>
-                            <OpenBetsSection
-                                tournament={activeTournament}
-                                onTipSaved={(betId, optionIndex) => markTip(activeId, betId, optionIndex)}
-                            />
-
-                            <div className="dash-bottom-row">
-                                <EvaluatedSection
-                                    tournament={activeTournament}
-                                    open={showEvaluated}
-                                    onToggle={() => setShowEvaluated((p) => !p)}
-                                    onBetResolved={(betId, updatedBet) =>
-                                        applyResolvedBet(activeId, betId, updatedBet)
-                                    }
-                                />
-                                <Leaderboard tournament={activeTournament} />
-                            </div>
-                        </>
-                    )}
-                </main>
+            <div className="dash-two-cols" style={{ marginTop: '1.25rem' }}>
+                <EvaluatedSection
+                    tournament={activeTournament}
+                    open={showEvaluated}
+                    onToggle={() => setShowEvaluated((p) => !p)}
+                    onBetResolved={(betId, updated) =>
+                        applyResolvedBet?.(activeId, betId, updated)
+                    }
+                />
+                <Leaderboard tournament={activeTournament} />
             </div>
-        </div>
+        </>
     );
-
 }

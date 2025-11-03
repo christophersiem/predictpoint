@@ -1,4 +1,3 @@
-// src/pages/AuthPage.tsx
 import {Navigate} from 'react-router-dom';
 import '../App.css';
 import AuthLayout from '../components/auth/AuthLayout';
@@ -35,7 +34,7 @@ function AuthPage() {
     }
 
     if (user) {
-        return <Navigate to="/dashboard" replace/>;
+        return <Navigate to="/app" replace/>;
     }
 
     return (

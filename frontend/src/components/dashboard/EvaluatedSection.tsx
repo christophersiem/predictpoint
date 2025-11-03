@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useUser } from '../../context/UserContext';
+import React, {useState} from 'react';
+import {useUser} from '../../context/UserContext';
 import './EvaluatedSection.css';
-import type { UiTournament } from '../../types/tournament';
+import type {UiTournament} from '../../types/tournament';
 
 type EvaluatedSectionProps = {
     tournament: UiTournament;
@@ -47,7 +47,7 @@ export function EvaluatedSection({
                 return;
             }
 
-            const data = await res.json(); //
+            const data = await res.json();
 
             const correct = data.myTip?.correct as boolean | null | undefined;
             const result: 'win' | 'loss' | 'pending' =

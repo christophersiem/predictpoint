@@ -1,9 +1,9 @@
-import React from 'react';
 import './DashboardHeader.css';
-import { useUser } from '../../context/UserContext';
+import {useNavigate} from 'react-router-dom';
+import {useUser} from '../../context/UserContext';
 import type {UiTournament} from "../../types/tournament.ts";
 
-type DashboardHeaderProps = {
+type Props = {
     tournaments: UiTournament[];
     activeTournamentId: string;
     onSelect: (id: string) => void;
@@ -12,13 +12,15 @@ type DashboardHeaderProps = {
 };
 
 export function DashboardHeader({
-                                    tournaments,
+                                    tournaments = [],
                                     activeTournamentId,
                                     onSelect,
                                     loading,
                                     onLogout,
-                                }: DashboardHeaderProps) {
+                                }: Props) {
     const { user } = useUser();
+    const navigate = useNavigate();
+    const canCreate = tournaments?.length < 3;
 
     return (
         <header className="dash-topbar">
@@ -30,33 +32,42 @@ export function DashboardHeader({
 
                 <div className="dash-top-center">
                     <div className="tournament-tabs">
-                        {tournaments.map((t) => (
+                        {tournaments?.map((t) => (
                             <button
                                 key={t.id}
                                 type="button"
-                                onClick={() => onSelect(t.id)}
-                                className={
-                                    t.id === activeTournamentId
-                                        ? 'tournament-btn is-active'
-                                        : 'tournament-btn'
-                                }
+                                onClick={() => {
+                                    if (location.pathname !== '/app') {
+                                        navigate('/app');
+                                    }
+                                    onSelect(t.id);
+                                }}
+                                className={t.id === activeTournamentId ? 'tournament-btn is-active' : 'tournament-btn'}
                             >
                                 {t.name}
                             </button>
                         ))}
+
+                        {canCreate && (
+                            <button
+                                type="button"
+                                className="tournament-btn create-btn"
+                                onClick={() => navigate('/app/tournaments/new')}
+                                title="Neue Runde erstellen"
+                            >
+                                + Neue Runde
+                            </button>
+                        )}
+
                         {loading && <span className="loading-hint">lädt…</span>}
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    className="logout-btn"
-                    onClick={onLogout}
-                    aria-label="Logout"
-                    title="Logout"
-                >
-                    ⏻
-                </button>
+                <div className="dash-top-right">
+                    <button className="logout-btn" onClick={onLogout} aria-label="Logout" title="Logout">
+                        ⎋
+                    </button>
+                </div>
             </div>
         </header>
     );

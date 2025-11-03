@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { mapBackendToUi } from '../mappers/tournamentMapper';
-import type { BackendTournament, UiTournament } from '../types/tournament';
+import {useEffect, useState} from 'react';
+import {mapBackendToUi} from '../mappers/tournamentMapper';
+import type {BackendTournament, UiTournament} from '../types/tournament';
 
 export function useMyTournaments() {
     const [tournaments, setTournaments] = useState<UiTournament[]>([]);

@@ -1,4 +1,6 @@
-/* Dashboard Grundlayout */
+/* ===== Dashboard Layout (einzige Layout-Datei) ===== */
+
+/* Vollbild-Hintergrund */
 .dash-page {
     min-height: 100vh;
     background: radial-gradient(circle at top, #0b0d10 0%, #030405 80%);
@@ -6,39 +8,90 @@
     flex-direction: column;
 }
 
-/* grid: main + sidebar */
+/* Inhalt beginnt UNTER dem sticky Header
+   Fallback 70px, falls --header-h (aus Header-CSS) noch nicht da ist */
 .dash-layout {
-    flex: 1;
-    display: grid;
-    grid-template-columns: minmax(620px, 1.1fr) 320px;
-    gap: 1.5rem;
-    padding: 1.5rem 2.2rem 2rem;
+    padding-top: var(--header-h, 70px);
+    padding-left: 18px;
+    padding-right: 18px;
+    padding-bottom: 32px;
 }
 
-/* main content */
+/* Zentrierter Wrapper */
+.dash-container {
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Hauptspalte */
 .dash-main {
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1.25rem;
 }
 
-/* =========================
-   3) Content-Grid: auf Mobile EINspaltig erzwingen
-   ========================= */
-@media (max-width: 1024px) {
-    .dash-layout {
-        grid-template-columns: 1fr;
-        padding: 1rem 1.15rem 1.5rem;
-    }
-
-    .dash-main,
-    .dash-sidebar {
-        gap: 1rem;
-    }
+/* Utility: optionale 2-Spalten-Zeile (links breit, rechts schmal) */
+.dash-two-cols {
+    display: grid;
+    grid-template-columns: minmax(580px, 1.05fr) 320px;
+    gap: 1.5rem;
+    align-items: flex-start;
 }
 
-/* Hinweis-Text für leere Listen (falls nicht da) */
+/* Karten-Basis */
+.card-block {
+    background: rgba(7, 8, 10, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 1.1rem;
+    padding: 1.15rem 1.2rem 1rem;
+    backdrop-filter: blur(6px);
+}
+
+/* Typo */
+.section-headline h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+.section-headline p {
+    margin-top: 0.25rem;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.48);
+}
+
 .empty-hint {
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+    .dash-two-cols {
+        grid-template-columns: 1fr; /* untereinander */
+    }
+}
+
+@media (max-width: 1024px) {
+    .dash-layout {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-bottom: 24px;
+    }
+}
+
+@media (max-width: 720px) {
+    .dash-layout {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: 20px;
+    }
+    .card-block {
+        border-radius: 1rem;
+        padding: 1rem 0.85rem 1rem;
+    }
+    .section-headline h2 {
+        font-size: 1.15rem;
+    }
 }

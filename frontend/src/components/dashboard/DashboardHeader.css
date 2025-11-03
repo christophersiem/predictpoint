@@ -1,129 +1,114 @@
+:root { --header-h: 70px; }
+
 .dash-topbar {
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    background: transparent;
-    padding: 0 1.6rem;
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: rgba(7,8,10,.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
 .dash-top-inner {
     max-width: 1180px;
     margin: 0 auto;
-    height: 70px;
-    display: flex;
+    height: var(--header-h);
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* L | M | R */
     align-items: center;
-    gap: 1.2rem;
+    column-gap: 1.2rem;
     position: relative;
 }
 
-/* linke Seite */
 .dash-top-left {
+    justify-self: start;
     display: flex;
     flex-direction: column;
     gap: 3px;
     min-width: 180px;
 }
+.dash-hello { font-size: 1.05rem; color: #fff; font-weight: 600; }
+.dash-sub   { font-size: .7rem;  color: rgba(255,255,255,.45); }
 
-.dash-hello {
-    font-size: 1.05rem;
-    color: #fff;
-    font-weight: 600;
-}
-
-.dash-sub {
-    font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.45);
-}
-
-/* Mitte – Tabs */
 .dash-top-center {
-    flex: 1;
+    justify-self: center;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }
-
 .tournament-tabs {
     display: flex;
-    gap: 0.5rem;
+    gap: .5rem;
     flex-wrap: wrap;
     justify-content: center;
 }
-
 .tournament-btn {
-    background: rgba(247, 147, 26, 0.08);
-    border: 1px solid rgba(247, 147, 26, 0.2);
+    background: rgba(247,147,26,.08);
+    border: 1px solid rgba(247,147,26,.2);
     color: #fff;
-    border-radius: 0.65rem;
-    padding: 0.4rem 1.1rem 0.45rem;
-    font-size: 0.7rem;
+    border-radius: .65rem;
+    padding: .4rem 1.1rem .45rem;
+    font-size: .7rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease-out;
     white-space: nowrap;
+    transition: all .15s ease-out;
 }
-
+.tournament-btn:hover { background: rgba(247,147,26,.18); border-color: rgba(247,147,26,.35); }
 .tournament-btn.is-active {
-    background: linear-gradient(95deg, #f7931a 0%, #ffb347 100%);
-    border-color: rgba(255, 177, 71, 0.12);
-    box-shadow: 0 8px 20px rgba(247, 147, 26, 0.35);
+    background: linear-gradient(95deg,#f7931a 0%,#ffb347 100%);
+    border-color: rgba(255,177,71,.12);
+    box-shadow: 0 8px 20px rgba(247,147,26,.35);
+}
+.tournament-btn.create-btn{
+    background: linear-gradient(95deg,#26d07c 0%,#37e3a0 100%);
+    border-color: rgba(55,227,160,.25);
+    color:#0b0d10;
+    font-weight:700;
+}
+.tournament-btn.create-btn:hover{
+    filter:brightness(1.05);
+    box-shadow:0 7px 20px rgba(55,227,160,.35);
 }
 
-/* Logout rechts */
-.logout-btn {
-    background: rgba(247, 147, 26, 0.95);
-    border: 1px solid rgba(255, 203, 131, 0.35);
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    color: #0b0d10;
-    cursor: pointer;
-    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
-    font-size: 0.9rem;
-    box-shadow: 0 6px 16px rgba(247, 147, 26, 0.35);
-    flex: 0 0 auto;
+/* rechts */
+.dash-top-right { justify-self: end; }
+.logout-btn{
+    width:34px; height:34px; border-radius:999px;
+    background:rgba(247,147,26,.9);
+    border:1px solid rgba(255,203,131,.35);
+    display:grid; place-items:center; color:#0b0d10; cursor:pointer;
+    box-shadow:0 6px 16px rgba(247,147,26,.35);
+    transition: transform .12s ease-out, box-shadow .12s ease-out;
 }
+.logout-btn:hover { transform: translateY(-1px); box-shadow:0 8px 20px rgba(247,147,26,.55); }
 
-/* === Mobile / kleine Screens === */
-@media (max-width: 900px) {
-    .dash-top-inner {
+@media (max-width: 900px){
+    .dash-top-inner{
+        grid-template-columns: 1fr;
         height: auto;
-        padding: 0.9rem 0 0.75rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.55rem;
+        row-gap: .6rem;
+        padding: 12px 12px 10px;
     }
-
-    .logout-btn {
-        position: absolute;
-        top: 0.9rem;
-        right: 0;
+    .logout-btn{
+        position:absolute;
+        top:10px; right:12px;
+        z-index:70;
     }
-
-    .dash-top-center {
-        width: 100%;
-        justify-content: flex-start;
-    }
-
-    .tournament-tabs {
-        flex-wrap: nowrap;        /* nicht umbrechen */
-        overflow-x: auto;         /* horizontal scrollen */
+    .dash-top-left{ width:100%; }
+    .dash-top-center{ width:100%; justify-content:flex-start; }
+    .tournament-tabs{
+        flex-wrap: nowrap;
+        overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        gap: 0.55rem;
-        padding-right: 3rem;      /* Platz für Logout-Button */
+        gap:.55rem;
+        padding-right: 56px;
     }
-
-    .tournament-tabs::-webkit-scrollbar {
-        display: none;
-    }
+    .tournament-tabs::-webkit-scrollbar{ display:none; }
 }
 
-/* noch kleiner */
-@media (max-width: 480px) {
-    .dash-hello {
-        font-size: 1rem;
-    }
-    .tournament-btn {
-        padding: 0.35rem 0.95rem 0.4rem;
-    }
+@media (max-width: 480px){
+    .dash-hello{ font-size: 1rem; }
+    .tournament-btn{ padding: .35rem .95rem .4rem; }
 }

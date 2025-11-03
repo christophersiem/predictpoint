@@ -1,4 +1,4 @@
-import { loginWithId, registerUser } from '../services/authService';
+import {loginWithId, registerUser} from '../services/authService';
 import {useUser} from "../context/UserContext.tsx";
 
 export function useAuth() {

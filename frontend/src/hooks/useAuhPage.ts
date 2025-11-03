@@ -1,8 +1,7 @@
-// src/hooks/useAuthPage.ts
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
-import { useAuth } from './useAuth';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useUser} from '../context/UserContext';
+import {useAuth} from './useAuth';
 
 export function useAuthPage() {
     const [id, setId] = useState('');
@@ -23,7 +22,7 @@ export function useAuthPage() {
         setFormError(null);
         try {
             await login(id);
-            navigate('/dashboard');
+            navigate('/app');
         } catch (err: any) {
             console.error(err);
             setFormError(err?.message ?? 'Einloggen fehlgeschlagen');

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import type { UiTournament } from '../../types/tournament';
+import React, {useEffect, useState} from 'react';
+import type {UiTournament} from '../../types/tournament';
 import './OpenBetsSection.css';
 
 type OpenBetsSectionProps = {

@@ -1,10 +1,4 @@
-import type {
-    BackendTournament,
-    BackendBet,
-    UiTournament,
-    UiOpenBet,
-    UiEvaluatedBet,
-} from '../types/tournament';
+import type {BackendBet, BackendTournament, UiEvaluatedBet, UiOpenBet, UiTournament,} from '../types/tournament';
 
 export function mapBackendToUi(t: BackendTournament): UiTournament {
     const openBets: UiOpenBet[] = (t.activeBets ?? []).map((b: BackendBet) => ({
