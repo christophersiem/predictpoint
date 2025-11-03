@@ -1,8 +1,8 @@
 import {Outlet} from 'react-router-dom';
-import {useUser} from '../context/UserContext';
 import {DashboardHeader} from '../components/dashboard/DashboardHeader';
 import {useMyTournaments} from '../hooks/useMyTournaments';
 import '../styles/dashboard-layout.css';
+import {useAuth} from "../hooks/useAuth.ts";
 
 export type AppOutletCtx = {
     tournaments: ReturnType<typeof useMyTournaments>['tournaments'];
@@ -19,16 +19,9 @@ export type AppOutletCtx = {
 };
 
 export default function AppShell() {
-    const { setUser } = useUser();
     const { tournaments, activeId, setActiveId, loading, error, markTip, applyResolvedBet } = useMyTournaments();
+const {logout} = useAuth();
 
-    const handleLogout = async () => {
-        try {
-            await fetch('/api/user/logout', { method: 'POST', credentials: 'include' });
-        } finally {
-            setUser(null);
-        }
-    };
 
     return (
         <div className="dash-page">
@@ -37,7 +30,7 @@ export default function AppShell() {
                 activeTournamentId={activeId}
                 onSelect={setActiveId}
                 loading={loading}
-                onLogout={handleLogout}
+                onLogout={logout}
             />
             <div className="dash-layout">
                 <div className="dash-container">

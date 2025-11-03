@@ -1,12 +1,13 @@
-import {loginWithId, registerUser} from '../services/authService';
+import {handleLogout, loginWithId, registerUser} from '../services/authService';
 import {useUser} from "../context/UserContext.tsx";
+import {useNavigate} from "react-router-dom";
 
 export function useAuth() {
-    const { setUser } = useUser();
-
+    const {setUser} = useUser();
+    const navigate = useNavigate();
     const login = async (id: string) => {
         const data = await loginWithId(id);
-        setUser({ id: data.id, name: data.name });
+        setUser({id: data.id, name: data.name});
         return data;
     };
 
@@ -15,5 +16,11 @@ export function useAuth() {
         return newId;
     };
 
-    return { login, register };
+    const logout = async () => {
+        await handleLogout()
+        setUser(null)
+navigate('/')
+    }
+
+    return {login, logout, register};
 }

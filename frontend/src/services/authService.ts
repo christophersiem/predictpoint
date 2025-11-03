@@ -3,6 +3,11 @@ export type LoginResponse = {
     name: string;
 };
 
+export async function  handleLogout(){
+
+        await fetch('/api/user/logout', { method: 'POST', credentials: 'include' });
+};
+
 export async function loginWithId(id: string): Promise<LoginResponse> {
     const res = await fetch('/api/user/login', {
         method: 'POST',

@@ -3,7 +3,8 @@ import { OpenBetsSection } from '../components/dashboard/OpenBetsSection';
 import { EvaluatedSection } from '../components/dashboard/EvaluatedSection';
 import { Leaderboard } from '../components/dashboard/Leaderboard';
 import './Dashboard.css';
-import { useMyTournaments } from '../hooks/useMyTournaments';
+import {useOutletContext} from "react-router-dom";
+import type {AppOutletCtx} from "../layout/AppShell.tsx";
 
 export default function Dashboard() {
     const {
@@ -13,7 +14,7 @@ export default function Dashboard() {
         error,
         markTip,
         applyResolvedBet,
-    } = useMyTournaments();
+    } = useOutletContext<AppOutletCtx>();
 
     const [showEvaluated, setShowEvaluated] = useState(false);
 
