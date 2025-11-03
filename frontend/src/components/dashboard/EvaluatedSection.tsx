@@ -85,44 +85,54 @@ export function EvaluatedSection({
             </button>
 
             {open && (
-                <div className="evaluated-list">
+                <div className="evaluated-grid">
                     {items.length > 0 ? (
                         items.map((item) => {
-                            const isPending = item.result === 'pending';
+                            const myIdx = item.myTip?.selectedOptionIndex ?? null;
+                            const correctIdx =
+                                item.correctOptionIndex != null && item.correctOptionIndex >= 0
+                                    ? item.correctOptionIndex
+                                    : null;
+
+                            const myLabel = myIdx != null && item.options ? item.options[myIdx] : '–';
+                            const correctLabel = correctIdx != null && item.options ? item.options[correctIdx] : '–';
 
                             return (
                                 <article
                                     key={item.id}
-                                    className={`eval-item eval-item--${item.result}`}
+                                    className={`eval-card eval-card--${item.result}`}
                                 >
-                                    <div className="eval-head">
-                                        <p className="eval-title">{item.title}</p>
-                                        <span className={`eval-badge eval-badge--${item.result}`}>
-                      {item.result === 'win'
-                          ? 'richtig'
-                          : item.result === 'loss'
-                              ? 'falsch'
-                              : 'ausstehend'}
-                    </span>
+                                    <div className="eval-card__head">
+                                        <h4 className="eval-card__title">{item.title}</h4>
+                                        <span className="eval-card__meta">{item.meta}</span>
                                     </div>
 
-                                    <p className="eval-meta">{item.meta}</p>
-                                    <p className={`eval-result eval-result--${item.result}`}>
-                                        {item.resultText}
-                                    </p>
+                                    <div className="eval-card__rows">
+                                        <div className="eval-row">
+                                            <span className="eval-row__label">Dein Tipp</span>
+                                            <span className={`eval-chip ${item.result === 'win' ? 'is-win' : item.result === 'loss' ? 'is-loss' : ''}`}>
+                  {myLabel}
+                </span>
+                                        </div>
 
-                                    {isAdmin && isPending && item.options && item.options.length > 0 && (
+                                        {item.result !== 'pending' && (
+                                            <div className="eval-row">
+                                                <span className="eval-row__label">Lösung</span>
+                                                <span className="eval-chip">{correctLabel}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {isAdmin && item.result === 'pending' && item.options && item.options.length > 0 && (
                                         <div className="eval-resolve-box">
-                                            <p className="eval-resolve-label">
-                                                Als richtige Antwort festlegen:
-                                            </p>
+                                            <p className="eval-resolve-label">Als richtige Antwort festlegen:</p>
                                             <div className="eval-resolve-buttons">
                                                 {item.options.map((opt, idx) => (
                                                     <button
                                                         key={opt + idx}
                                                         type="button"
                                                         className="eval-resolve-btn"
-                                                        onClick={() => handleResolve(item.id, idx)}
+                                                        onClick={() => handleResolve(item.id, idx, item.title)}
                                                         disabled={resolvingId === item.id}
                                                     >
                                                         {opt}
@@ -135,9 +145,7 @@ export function EvaluatedSection({
                             );
                         })
                     ) : (
-                        <p className="empty-hint">
-                            Für dieses Turnier wurden noch keine Wetten ausgewertet.
-                        </p>
+                        <p className="empty-hint">Für dieses Turnier wurden noch keine Wetten ausgewertet.</p>
                     )}
                 </div>
             )}

@@ -49,6 +49,8 @@ export type UiEvaluatedBet = {
     result: 'win' | 'loss' | 'pending';
     resultText: string;
     options?: string[];
+    correctOptionIndex?: number | null;
+    myTip?: { selectedOptionIndex: number | null } | null;
 };
 
 export type UiTournament = {

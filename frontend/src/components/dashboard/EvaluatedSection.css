@@ -24,116 +24,92 @@
     opacity: 1;
 }
 
-.evaluated-list {
+.evaluated-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.9rem;
     margin-top: 0.7rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
 }
 
-.eval-item {
-    background: rgba(0, 0, 0, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.01);
+.eval-card {
+    background: rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(255,255,255,0.04);
     border-radius: 0.9rem;
-    padding: 0.55rem 0.65rem 0.5rem;
+    padding: 0.75rem 0.8rem 0.7rem;
+    position: relative;
 }
 
-.eval-head {
+.eval-card--win    { border-color: rgba(120, 235, 170, 0.35); box-shadow: inset 0 0 0 1px rgba(120,235,170,0.12); }
+.eval-card--loss   { border-color: rgba(255, 120, 120, 0.35); box-shadow: inset 0 0 0 1px rgba(255,120,120,0.10); }
+.eval-card--pending{ border-color: rgba(247,147,26,0.32);    box-shadow: inset 0 0 0 1px rgba(247,147,26,0.08); }
+
+.eval-card__head {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
 }
 
-.eval-title {
-    font-weight: 500;
+.eval-card__title {
     color: #fff;
-    font-size: 0.8rem;
+    font-weight: 600;
+    font-size: 0.95rem;
 }
 
-.eval-meta {
-    font-size: 0.63rem;
-    color: rgba(255, 255, 255, 0.35);
-    margin-top: 0.25rem;
+.eval-card__meta {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.45);
 }
 
-.eval-result {
-    font-size: 0.63rem;
-    margin-top: 0.35rem;
+.eval-card__rows {
+    display: grid;
+    gap: 0.35rem;
 }
 
-.eval-badge {
-    font-size: 0.6rem;
-    padding: 0.15rem 0.5rem 0.2rem;
+.eval-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.eval-row__label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+}
+
+.eval-chip {
+    padding: 0.25rem 0.6rem;
     border-radius: 999px;
-    text-transform: lowercase;
+    font-size: 0.75rem;
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
 }
+.eval-chip.is-win  { background: rgba(120,235,170,0.14); border-color: rgba(120,235,170,0.45); }
+.eval-chip.is-loss { background: rgba(255,120,120,0.12); border-color: rgba(255,120,120,0.45); }
 
-
-.eval-item--win {
-    border-color: rgba(142, 255, 165, 0.08);
-    background: radial-gradient(circle at top, rgba(46, 185, 113, 0.08), rgba(0,0,0,0));
-}
-.eval-badge--win {
-    background: rgba(82, 211, 138, 0.2);
-    color: #c9ffe1;
-}
-.eval-result--win {
-    color: #a1ffbe;
-}
-
-.eval-item--loss {
-    border-color: rgba(255, 65, 65, 0.08);
-    background: radial-gradient(circle at top, rgba(255, 65, 65, 0.04), rgba(0,0,0,0));
-}
-.eval-badge--loss {
-    background: rgba(255, 77, 77, 0.18);
-    color: #ffd2d2;
-}
-.eval-result--loss {
-    color: #ff9292;
-}
-
-.eval-item--pending {
-    border-color: rgba(255, 197, 111, 0.05);
-}
-.eval-badge--pending {
-    background: rgba(255, 197, 111, 0.14);
-    color: #ffe2b8;
-}
-.eval-result--pending {
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.eval-resolve-box {
-    margin-top: 0.55rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.02);
-    padding-top: 0.5rem;
-}
-
+.eval-resolve-box { margin-top: 0.55rem; }
 .eval-resolve-label {
-    font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.7);
     margin-bottom: 0.35rem;
 }
-
 .eval-resolve-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
 }
-
 .eval-resolve-btn {
-    background: rgba(255, 163, 43, 0.14);
-    border: 1px solid rgba(255, 177, 71, 0.35);
-    border-radius: 999px;
-    padding: 0.28rem 0.7rem 0.35rem;
-    font-size: 0.62rem;
+    background: rgba(0,0,0,0.14);
+    border: 1px solid rgba(247,147,26,0.35);
     color: #fff;
+    border-radius: 999px;
+    padding: 0.32rem 0.8rem;
+    font-size: 0.72rem;
     cursor: pointer;
-    transition: all 0.12s ease-out;
 }
-
 .eval-resolve-btn:hover {
-    background: rgba(255, 177, 71, 0.25);
+    background: rgba(247,147,26,0.16);
 }
