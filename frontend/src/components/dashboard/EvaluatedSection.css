@@ -32,16 +32,27 @@
 }
 
 .eval-card {
-    background: rgba(0, 0, 0, 0.14);
-    border: 1px solid rgba(255,255,255,0.04);
+    background: hsl(var(--bg-800-hsl)/.14);
+    border: 1px solid var(--border-subtle);
     border-radius: 0.9rem;
     padding: 0.75rem 0.8rem 0.7rem;
     position: relative;
 }
 
-.eval-card--win    { border-color: rgba(120, 235, 170, 0.35); box-shadow: inset 0 0 0 1px rgba(120,235,170,0.12); }
-.eval-card--loss   { border-color: rgba(255, 120, 120, 0.35); box-shadow: inset 0 0 0 1px rgba(255,120,120,0.10); }
-.eval-card--pending{ border-color: rgba(247,147,26,0.32);    box-shadow: inset 0 0 0 1px rgba(247,147,26,0.08); }
+.eval-card--win {
+    border-color: hsl(var(--success-400-hsl)/.35);
+    box-shadow: inset 0 0 0 1px hsl(var(--success-400-hsl)/.12);
+}
+
+.eval-card--loss {
+    border-color: hsl(var(--error-400-hsl)/.35);
+    box-shadow: inset 0 0 0 1px hsl(var(--error-400-hsl)/.10);
+}
+
+.eval-card--pending {
+    border-color: hsl(var(--brand-500-hsl)/.32);
+    box-shadow: inset 0 0 0 1px hsl(var(--brand-500-hsl)/.08);
+}
 
 .eval-card__head {
     display: flex;
@@ -59,7 +70,7 @@
 
 .eval-card__meta {
     font-size: 0.68rem;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255, 255, 255, 0.45);
 }
 
 .eval-card__rows {
@@ -76,7 +87,7 @@
 
 .eval-row__label {
     font-size: 0.75rem;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .eval-chip {
@@ -84,32 +95,46 @@
     border-radius: 999px;
     font-size: 0.75rem;
     color: #fff;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.eval-chip.is-win  { background: rgba(120,235,170,0.14); border-color: rgba(120,235,170,0.45); }
-.eval-chip.is-loss { background: rgba(255,120,120,0.12); border-color: rgba(255,120,120,0.45); }
 
-.eval-resolve-box { margin-top: 0.55rem; }
+.eval-chip.is-win {
+    background: hsl(var(--success-400-hsl)/.14);
+    border-color: hsl(var(--success-400-hsl)/.45);
+}
+
+.eval-chip.is-loss {
+    background: hsl(var(--error-400-hsl)/.12);
+    border-color: hsl(var(--error-400-hsl)/.45);
+}
+
+.eval-resolve-box {
+    margin-top: 0.55rem;
+}
+
 .eval-resolve-label {
     font-size: 0.72rem;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255, 255, 255, 0.7);
     margin-bottom: 0.35rem;
 }
+
 .eval-resolve-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
 }
+
 .eval-resolve-btn {
-    background: rgba(0,0,0,0.14);
-    border: 1px solid rgba(247,147,26,0.35);
+    background: rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(247, 147, 26, 0.35);
     color: #fff;
     border-radius: 999px;
     padding: 0.32rem 0.8rem;
     font-size: 0.72rem;
     cursor: pointer;
 }
+
 .eval-resolve-btn:hover {
-    background: rgba(247,147,26,0.16);
+    background: rgba(247, 147, 26, 0.16);
 }

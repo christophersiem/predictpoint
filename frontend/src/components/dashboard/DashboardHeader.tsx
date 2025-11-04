@@ -18,7 +18,6 @@ export function DashboardHeader({
                                     loading,
                                     onLogout,
                                 }: Props) {
-    const { user } = useUser();
     const navigate = useNavigate();
     const canCreate = tournaments?.length < 3;
 
@@ -26,8 +25,15 @@ export function DashboardHeader({
         <header className="dash-topbar">
             <div className="dash-top-inner">
                 <div className="dash-top-left">
-                    <p className="dash-hello">Hallo {user?.name ?? 'Spieler'} 👋</p>
-                    <p className="dash-sub">Willkommen zurück bei predictpoint</p>
+                    <button className="brand" onClick={() => navigate('/app')} aria-label="Start">
+                        <span className="logo-circle">
+                          <span className="logo-letter">p</span>
+                         </span>
+                        <span className="brand-text">
+    <span className="brand-title">predictpoint</span>
+  </span>
+                    </button>
+
                 </div>
 
                 <div className="dash-top-center">

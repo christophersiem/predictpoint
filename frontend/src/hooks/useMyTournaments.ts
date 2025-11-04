@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {mapBackendToUi} from '../mappers/tournamentMapper';
-import type {BackendTournament, UiTournament} from '../types/tournament';
+import type {BackendTournament, UiEvaluatedBet, UiTournament} from '../types/tournament';
 
 export function useMyTournaments() {
     const [tournaments, setTournaments] = useState<UiTournament[]>([]);
@@ -47,29 +47,23 @@ export function useMyTournaments() {
     const applyResolvedBet = (
         tournamentId: string,
         betId: string,
-        updated: {
-            id: string;
-            title: string;
-            result: 'win' | 'loss' | 'pending';
-            resultText: string;
-            options?: string[];
-        }
+        updated: UiEvaluatedBet
     ) => {
-        setTournament(tournamentId, (t) => ({
-            ...t,
-            evaluated: [
-                {
-                    id: updated.id,
-                    title: updated.title,
-                    meta: 'ausgewertet',
-                    result: updated.result,
-                    resultText: updated.resultText,
-                    options: updated.options ?? [],
-                },
-                ...t.evaluated.filter((b) => b.id !== betId),
-            ],
-        }));
+        setTournaments(prev =>
+            prev.map(t => {
+                if (t.id !== tournamentId) return t;
+                return {
+                    ...t,
+                    openBets: t.openBets.filter(b => b.id !== betId),
+                    evaluated: [
+                        updated,
+                        ...t.evaluated.filter(b => b.id !== betId),
+                    ],
+                };
+            })
+        );
     };
+
 
     return {
         tournaments,
@@ -79,5 +73,6 @@ export function useMyTournaments() {
         error,
         markTip,
         applyResolvedBet,
+
     };
 }

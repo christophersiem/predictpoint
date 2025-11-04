@@ -30,7 +30,6 @@ export function mapBackendToUi(t: BackendTournament): UiTournament {
                 ? b.myTip!.selectedOptionIndex
                 : null;
 
-        // Ergebnis bestimmen (bevorzugt über correctOptionIndex)
         let result: UiEvaluatedBet['result'] = 'pending';
         if (hasCorrect && myIdx !== null) {
             result = myIdx === b.correctOptionIndex ? 'win' : 'loss';
@@ -78,7 +77,7 @@ export function mapBackendToUi(t: BackendTournament): UiTournament {
     return {
         id: t.id,
         name: t.name,
-        adminId: (t as any).adminId, // falls im Backend enthalten
+        adminId: (t as any).adminId,
         openBets,
         evaluated: [...resolved, ...past],
         leaderboard: (t.participantNames ?? []).map((name) => ({

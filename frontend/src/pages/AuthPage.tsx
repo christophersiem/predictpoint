@@ -39,10 +39,10 @@ function AuthPage() {
 
     return (
         <AuthLayout>
-            <InfoBanner open={showInfo} onToggle={() => setShowInfo((p) => !p)}/>
+            {/*<InfoBanner open={showInfo} onToggle={() => setShowInfo((p) => !p)}/>*/}
 
             <div className="auth-card">
-                <LoginCard id={id} onIdChange={setId} onSubmit={handleLoginSubmit}/>
+                <LoginCard id={id} onIdChange={id => setId(id.trim())} onSubmit={handleLoginSubmit}/>
 
                 <div className="divider" aria-hidden/>
 

@@ -1,0 +1,39 @@
+/* ---- Farb-Tokens (Dark) ---- */
+:root {
+    /* Brand (Orange) */
+    --brand-300-hsl: 36 100% 65%;
+    --brand-400-hsl: 34 100% 62%;
+    --brand-500-hsl: 32 100% 55%; /* ~ #f7931a */
+    --brand-600-hsl: 28 95% 46%;  /* ~ #d87800 */
+    --brand-700-hsl: 26 88% 38%;  /* ~ #ab5006 */
+
+    /* Success (Mint) */
+    --success-400-hsl: 152 72% 56%; /* ~ #37e3a0 */
+    --success-500-hsl: 154 64% 48%; /* ~ #26d07c */
+
+    /* Error */
+    --error-400-hsl: 0 85% 63%;    /* ~ #ff7878 */
+
+    /* Neutrals / Backgrounds */
+    --bg-950-hsl: 210 30% 3%;
+    --bg-900-hsl: 210 22% 6%;
+    --bg-800-hsl: 210 20% 9%;
+
+    /* Text */
+    --text-strong: #fff;
+    --text-muted: rgba(255,255,255,.6);
+    --text-subtle: rgba(255,255,255,.45);
+
+    /* Surfaces / Borders */
+    --surface-1: hsl(var(--bg-900-hsl) / 0.85); /* sticky header glass */
+    --surface-2: hsl(var(--bg-900-hsl) / 0.55); /* cards */
+    --border-soft: rgba(255,255,255,.06);
+    --border-subtle: rgba(255,255,255,.04);
+
+    /* Gradients & Shadows */
+    --brand-gradient:   linear-gradient(95deg, hsl(var(--brand-500-hsl)) 0%, hsl(var(--brand-400-hsl)) 100%);
+    --success-gradient: linear-gradient(95deg, hsl(var(--success-500-hsl)) 0%, hsl(var(--success-400-hsl)) 100%);
+    --logo-gradient:    linear-gradient(140deg, hsl(var(--brand-400-hsl)) 15%, hsl(var(--brand-700-hsl)) 90%);
+
+    --brand-shadow-1: 0 8px 20px hsl(var(--brand-500-hsl)/.35);
+}

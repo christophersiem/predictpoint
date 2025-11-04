@@ -9,8 +9,8 @@
 }
 
 .bet-card {
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(247, 147, 26, 0.04);
+    background: hsl(var(--bg-800-hsl)/.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 1rem;
     padding: 0.75rem 0.8rem 0.65rem;
     min-height: 155px;
@@ -51,15 +51,17 @@
 }
 
 .bet-option:hover {
-    background: rgba(247, 147, 26, 0.09);
-    border-color: rgba(247, 147, 26, 0.35);
+    background: hsl(var(--brand-500-hsl)/.09);
+    border-color: hsl(var(--brand-500-hsl)/.35);
 }
 
+
 .bet-option.is-selected {
-    background: rgba(247, 147, 26, 0.14);
-    border: 1px solid rgba(247, 147, 26, 0.85);
-    box-shadow: 0 4px 14px rgba(247, 147, 26, 0.25);
+    background: hsl(var(--brand-500-hsl)/.14);
+    border-color: hsl(var(--brand-500-hsl)/.85);
+    box-shadow: 0 4px 14px hsl(var(--brand-500-hsl)/.25);
 }
+
 
 .bet-save-hint {
     font-size: 0.6rem;
@@ -76,6 +78,7 @@
     .open-bets-grid {
         grid-template-columns: 1fr;
     }
+
     .bet-card {
         min-height: auto;
     }
