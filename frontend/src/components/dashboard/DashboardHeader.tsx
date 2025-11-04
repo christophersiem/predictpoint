@@ -1,7 +1,7 @@
 import './DashboardHeader.css';
-import {useNavigate} from 'react-router-dom';
-import {useUser} from '../../context/UserContext';
+import {Link, useNavigate} from 'react-router-dom';
 import type {UiTournament} from "../../types/tournament.ts";
+import {Brand} from "../../layout/Brand.tsx";
 
 type Props = {
     tournaments: UiTournament[];
@@ -25,21 +25,17 @@ export function DashboardHeader({
         <header className="dash-topbar">
             <div className="dash-top-inner">
                 <div className="dash-top-left">
-                    <button className="brand" onClick={() => navigate('/app')} aria-label="Start">
-                        <span className="logo-circle">
-                          <span className="logo-letter">p</span>
-                         </span>
-                        <span className="brand-text">
-    <span className="brand-title">predictpoint</span>
-  </span>
-                    </button>
+                             <button className="brand" type="button" onClick={() => navigate('/app')} aria-label="Start">
+                               <Brand size={28} />
+                               <span className="sr-only">predictpoint</span>
+                             </button>
 
                 </div>
 
                 <div className="dash-top-center">
                     <div className="tournament-tabs">
                         {tournaments?.map((t) => (
-                            <button
+                            <Link to={'/app'}
                                 key={t.id}
                                 type="button"
                                 onClick={() => {
@@ -51,7 +47,7 @@ export function DashboardHeader({
                                 className={t.id === activeTournamentId ? 'tournament-btn is-active' : 'tournament-btn'}
                             >
                                 {t.name}
-                            </button>
+                            </Link>
                         ))}
 
                         {canCreate && (

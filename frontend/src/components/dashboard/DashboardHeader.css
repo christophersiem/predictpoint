@@ -2,15 +2,20 @@
 :root { --header-h: 70px; }
 :root { --logo-s: 28px; }
 
-.brand {
+.dash-top-left .brand {
     display: inline-flex;
     align-items: center;
-    gap: .55rem;
-    background: transparent;
-    border: 0;
+    gap: .5rem;
     padding: 0;
+    background: none;
+    border: 0;
     cursor: pointer;
 }
+.dash-top-left .brand img { height: 28px; }
+@media (min-width: 1024px) {
+    .dash-top-left .brand img { height: 32px; }
+}
+
 
 .logo-circle {
     width: var(--logo-s);
@@ -153,4 +158,8 @@
 @media (max-width: 480px){
     .dash-hello{ font-size: 1rem; }
     .tournament-btn{ padding: .35rem .95rem .4rem; }
+}
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }

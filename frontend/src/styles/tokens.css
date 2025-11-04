@@ -1,6 +1,7 @@
 /* ---- Farb-Tokens (Dark) ---- */
 :root {
     /* Brand (Orange) */
+    --brand-accent: #f7931a;
     --brand-300-hsl: 36 100% 65%;
     --brand-400-hsl: 34 100% 62%;
     --brand-500-hsl: 32 100% 55%; /* ~ #f7931a */

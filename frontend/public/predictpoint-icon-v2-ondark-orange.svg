@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="cut">
+      <rect width="256" height="256" fill="black"/>
+      <g fill="white">
+        <circle cx="128" cy="128" r="96"/>
+        <rect x="36" y="36" width="64" height="184" rx="8"/>
+      </g>
+      <circle cx="128" cy="128" r="56" fill="black"/>
+      <polygon points="128,82 200,128 128,174" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="256" height="256" fill="#ffffff" mask="url(#cut)"/>
+  <circle cx="200" cy="128" r="14" fill="#f7931a"/>
+</svg>
