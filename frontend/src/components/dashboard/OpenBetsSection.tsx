@@ -64,10 +64,9 @@ export function OpenBetsSection({ tournament, onTipSaved }: OpenBetsSectionProps
                     tournament.openBets.map((bet) => (
                         <article key={bet.id} className="bet-card">
                             <p className="bet-title">{bet.title}</p>
-                            <p className="bet-meta">läuft</p>
 
                             {bet.options && bet.options.length > 0 && (
-                                <div className="bet-options">
+                                <div className="bet-options" role="radiogroup" aria-label="Antwortoptionen">
                                     {bet.options.map((opt, idx) => {
                                         const isSelected = selectedByBet[bet.id] === idx;
                                         const isSaving = savingBetId === bet.id;
@@ -76,6 +75,8 @@ export function OpenBetsSection({ tournament, onTipSaved }: OpenBetsSectionProps
                                             <button
                                                 key={opt + idx}
                                                 type="button"
+                                                role="radio"
+                                                aria-checked={isSelected}
                                                 className={isSelected ? 'bet-option is-selected' : 'bet-option'}
                                                 onClick={() => handleSelectOption(bet.id, idx)}
                                                 disabled={isSaving}
@@ -88,16 +89,11 @@ export function OpenBetsSection({ tournament, onTipSaved }: OpenBetsSectionProps
                             )}
 
                             {savingBetId === bet.id && <p className="bet-save-hint">speichert …</p>}
-                            {savedBetId === bet.id && (
-                                <p className="bet-save-hint bet-save-hint-ok">Tipp gespeichert</p>
-                            )}
                         </article>
                     ))
                 ) : (
                     <p className="empty-hint">Für dieses Turnier gibt es gerade keine offenen Wetten.</p>
                 )}
-
-                <p className="bet-footnote">Du kannst deinen Tipp ändern, solange die Wette offen ist.</p>
             </div>
         </section>
     );
