@@ -64,3 +64,4 @@ export type UiTournament = {
         score: string;
     }[];
 };
+export type LeaderboardEntry = { name: string; score: string };

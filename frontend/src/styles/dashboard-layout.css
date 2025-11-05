@@ -8,10 +8,7 @@
 
 
 .dash-layout {
-    padding-top: var(--header-h, 70px);
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-bottom: 32px;
+    padding: var(--header-h, 70px) 18px 32px;
 }
 
 
@@ -79,9 +76,7 @@
 
 @media (max-width: 1024px) {
     .dash-layout {
-        padding-left: 16px;
-        padding-right: 16px;
-        padding-bottom: 24px;
+        padding: 20px 16px 24px;
     }
 }
 

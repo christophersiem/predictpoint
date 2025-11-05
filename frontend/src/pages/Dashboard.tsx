@@ -19,6 +19,7 @@ export default function Dashboard() {
 
     const [showEvaluated, setShowEvaluated] = useState(false);
     const {user} = useUser();
+    const [lbTick, setLbTick] = useState(0);
 
     const activeTournament =
         tournaments.find((t) => t.id === activeId) ?? tournaments[0];
@@ -31,36 +32,37 @@ export default function Dashboard() {
 
     return (
         <>
-        <section className="greet-strip card-block">
-            <div className="greet-texts">
-                <h1 className="greet-title">Hallo {user?.name ?? 'Spieler'} 👋</h1>
-                <p className="greet-sub">Willkommen zurück bei predictpoint</p>
+            <section className="greet-strip card-block">
+                <div className="greet-texts">
+                    <h1 className="greet-title">Hallo {user?.name ?? 'Spieler'} 👋</h1>
+                    <p className="greet-sub">Willkommen zurück bei predictpoint</p>
+                </div>
+            </section>
+            <div className="dash-two-cols">
+                <div className="dash-left-col">
+                    <OpenBetsSection
+                        tournament={activeTournament}
+                        onTipSaved={async (betId, optionIndex) => {
+                            await markTip?.(activeId, betId, optionIndex);
+                        }}
+                    />
+
+                    <EvaluatedSection
+                        tournament={activeTournament}
+                        open={showEvaluated}
+                        onToggle={() => setShowEvaluated((p) => !p)}
+                        onBetResolved={async (betId, updated) => {
+                            await applyResolvedBet?.(activeId, betId, updated);
+                            setLbTick((t) => t + 1);
+                        }}
+                    />
+                </div>
+
+                <div className="dash-right-col">
+                    <Leaderboard tournament={activeTournament}/>
+                </div>
             </div>
-        </section>
-    <div className="dash-two-cols">
-        <div className="dash-left-col">
-            <OpenBetsSection
-                tournament={activeTournament}
-                onTipSaved={(betId, optionIndex) =>
-                    markTip?.(activeId, betId, optionIndex)
-                }
-            />
-
-            <EvaluatedSection
-                tournament={activeTournament}
-                open={showEvaluated}
-                onToggle={() => setShowEvaluated((p) => !p)}
-                onBetResolved={(betId, updated) =>
-                    applyResolvedBet?.(activeId, betId, updated)
-                }
-            />
-        </div>
-
-        <div className="dash-right-col">
-            <Leaderboard tournament={activeTournament}/>
-        </div>
-    </div>
         </>
-)
-    ;
+    )
+        ;
 }

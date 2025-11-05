@@ -1,8 +1,5 @@
 .dash-layout {
-    padding-top: var(--header-h, 70px);
-    padding-left: 18px;
-    padding-right: 18px;
-    padding-bottom: 32px;
+    padding: var(--header-h, 70px) 18px 32px;
 }
 
 .dash-container {
@@ -64,6 +61,7 @@
 
 @media (max-width: 720px) {
     .dash-layout {
+        padding-top: 30px;
         padding-left: 12px;
         padding-right: 12px;
         padding-bottom: 20px;
