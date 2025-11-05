@@ -10,7 +10,6 @@ export function mapBackendToUi(t: BackendTournament): UiTournament {
     const openBets: UiOpenBet[] = (t.activeBets ?? []).map((b: BackendBet) => ({
         id: b.id,
         title: b.question,
-        meta: b.status === 'OPEN' ? 'läuft …' : b.status,
         options: b.options ?? [],
         myTip: b.myTip
             ? {
@@ -47,7 +46,6 @@ export function mapBackendToUi(t: BackendTournament): UiTournament {
         return {
             id: b.id,
             title: b.question,
-            meta: 'Ergebnis vorhanden',
             result,
             resultText,
             options: b.options ?? [],
@@ -59,7 +57,6 @@ export function mapBackendToUi(t: BackendTournament): UiTournament {
     const past: UiEvaluatedBet[] = (t.pastBets ?? []).map((b: BackendBet) => ({
         id: b.id,
         title: b.question,
-        meta: 'geschlossen',
         result: 'pending',
         resultText: 'wartet auf Auswertung',
         options: b.options ?? [],

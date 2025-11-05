@@ -29,11 +29,9 @@ public class Bet {
 
     private String question;
     @ElementCollection
-    @CollectionTable(
-            name = "bet_options",
-            joinColumns = @JoinColumn(name = "bet_id")
-    )
-    @Column(name = "option_text")
+    @CollectionTable(name = "bet_options", joinColumns = @JoinColumn(name = "bet_id"))
+    @Column(name = "option_text", nullable = false)
+    @OrderColumn(name = "option_pos")
     @Builder.Default
     private List<String> options = new ArrayList<>();
     @Builder.Default

@@ -17,6 +17,8 @@
     gap: 0.4rem;
     align-items: center;
     font-size: 0.75rem;
+    padding: 4px 6px;        /* <-- hinzugefügt */
+    border-radius: 8px;      /* <-- hinzugefügt (optisch wie vorher bei .me) */
 }
 
 .rank {
@@ -38,3 +40,35 @@
     color: rgba(255, 255, 255, 0.6);
     font-weight: 500;
 }
+
+
+.sub .muted {
+    margin-left: .5rem;
+    color: rgba(255,255,255,.6);
+    font-weight: 500;
+}
+
+.leader-list li.me {
+    background: rgba(247,147,26,0.12);
+}
+
+.leader-list li.me .rank {
+    background: #f7931a;
+    color: #0b0b0b;
+}
+
+.leader-list li.me .name {
+    font-weight: 700;
+}
+
+
+.ellipsis-row {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: .4rem;
+    align-items: center;
+    color: rgba(255,255,255,.4);
+    padding: 0 6px;
+}
+.ellipsis-row::before { content: ""; }
+.ellipsis-row::after { content: ""; }

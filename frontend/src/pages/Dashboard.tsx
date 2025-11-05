@@ -59,7 +59,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="dash-right-col">
-                    <Leaderboard tournament={activeTournament}/>
+                    <Leaderboard tournament={activeTournament} username={user?.name}/>
                 </div>
             </div>
         </>

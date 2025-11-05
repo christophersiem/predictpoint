@@ -35,7 +35,6 @@ export type BackendTournament = {
 export type UiOpenBet = {
     id: string;
     title: string;
-    meta: string;
     options: string[];
     myTip: {
         selectedOptionIndex: number | null;
@@ -45,7 +44,6 @@ export type UiOpenBet = {
 export type UiEvaluatedBet = {
     id: string;
     title: string;
-    meta: string;
     result: 'win' | 'loss' | 'pending';
     resultText: string;
     options?: string[];

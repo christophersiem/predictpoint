@@ -55,12 +55,8 @@ export function OpenBetsSection({ tournament, onTipSaved }: OpenBetsSectionProps
     return (
         <section className="card-block">
             <div className="section-headline">
-                <h2>Offene Wetten</h2>
-                <p>
-                    {tournament?.name
-                        ? `Diese Tipps laufen aktuell für "${tournament.name}".`
-                        : 'Diese Tipps laufen aktuell.'}
-                </p>
+                <h2>Gib deinen Tipp ab</h2>
+
             </div>
 
             <div className="open-bets-grid">
