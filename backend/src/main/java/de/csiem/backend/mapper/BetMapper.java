@@ -19,17 +19,12 @@ public class BetMapper {
                     .orElse(null);
 
             if (userTip != null) {
-                Boolean correct = null;
-                if (bet.isResolved() && bet.getCorrectOptionIndex() >= 0) {
-                    correct = userTip.getSelectedOptionIndex() == bet.getCorrectOptionIndex();
-                }
+
                 tipResponse = TipResponse.builder()
                         .id(userTip.getId())
                         .betId(bet.getId())
                         .selectedOptionIndex(userTip.getSelectedOptionIndex())
                         .selectedAnswer(userTip.getSelectedAnswer())
-                        .points(userTip.getPoints())
-                        .correct(correct)
                         .build();
             }
         }

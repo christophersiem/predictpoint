@@ -9,9 +9,13 @@ import de.csiem.backend.repository.AppUserRepository;
 import de.csiem.backend.repository.BetRepository;
 import de.csiem.backend.repository.TipRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class TipService {
     private final BetRepository betRepository;
     private final AppUserRepository appUserRepository;
 
+    @Transactional
     public TipResponse submitTip(String userId, TipRequest req) {
         AppUser user = appUserRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -31,53 +36,51 @@ public class TipService {
         if (bet.isResolved()) {
             throw new IllegalStateException("Bet already resolved");
         }
-        if (bet.getOpenUntil() != null && bet.getOpenUntil().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Bet is closed");
+        int idx = resolveIndex(req);
+        validateIndexAgainstOptions(idx, bet);
+
+        String answer = resolveAnswer(req, bet, idx);
+
+        String tipId = UUID.randomUUID().toString();
+        int changed = tipRepository.upsertIfOpen(tipId, bet.getId(), user.getId(), idx, answer);
+
+        if (changed == 0) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bet is closed");
         }
 
-        int idx = req.selectedOptionIndex() != null ? req.selectedOptionIndex() : -1;
-        String selectedAnswer = req.selectedAnswer();
+        Tip saved = tipRepository.findByUser_IdAndBet_Id(user.getId(), bet.getId())
+                .orElseThrow();
 
-        if (idx >= 0) {
-            if (bet.getOptions() == null || idx >= bet.getOptions().size()) {
-                throw new IllegalArgumentException("Option index out of range");
-            }
-            selectedAnswer = bet.getOptions().get(idx);
-        }
 
-        Tip tip = tipRepository
-                .findByUser_IdAndBet_Id(userId, bet.getId())
-                .orElse(null);
-
-        if (tip == null) {
-            tip = Tip.builder()
-                    .user(user)
-                    .bet(bet)
-                    .selectedOptionIndex(idx)
-                    .selectedAnswer(selectedAnswer)
-                    .points(0)
-                    .build();
-        } else {
-            tip.setSelectedOptionIndex(idx);
-            tip.setSelectedAnswer(selectedAnswer);
-        }
-
-        Tip saved = tipRepository.save(tip);
-
-        Boolean correct = null;
-        if (bet.isResolved() && bet.getCorrectOptionIndex() >= 0) {
-            correct = saved.getSelectedOptionIndex() == bet.getCorrectOptionIndex();
-        }
-
-        return TipResponse.builder()
-                .id(saved.getId())
-                .betId(bet.getId())
-                .selectedOptionIndex(saved.getSelectedOptionIndex())
-                .selectedAnswer(saved.getSelectedAnswer())
-                .points(saved.getPoints())
-                .correct(correct)
-                .build();
+        return toResponse(bet, saved);
     }
 
+    private static int resolveIndex(TipRequest req) {
+        return req.selectedOptionIndex() != null ? req.selectedOptionIndex() : -1;
+    }
+
+    private static void validateIndexAgainstOptions(int idx, Bet bet) {
+        if (idx >= 0) {
+            List<String> opts = bet.getOptions();
+            if (opts == null || idx >= opts.size()) {
+                throw new IllegalArgumentException("Option index out of range");
+            }
+        }
+    }
+
+    private static String resolveAnswer(TipRequest req, Bet bet, int idx) {
+        if (idx >= 0) return bet.getOptions().get(idx);
+        return req.selectedAnswer();
+    }
+
+    private static TipResponse toResponse(Bet bet, Tip tip ) {
+
+        return TipResponse.builder()
+                .id(tip.getId())
+                .betId(bet.getId())
+                .selectedOptionIndex(tip.getSelectedOptionIndex())
+                .selectedAnswer(tip.getSelectedAnswer())
+                .build();
+    }
 
 }

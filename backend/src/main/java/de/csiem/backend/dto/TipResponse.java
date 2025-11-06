@@ -14,6 +14,4 @@ public class TipResponse {
     private String betId;
     private Integer selectedOptionIndex;
     private String selectedAnswer;
-    private Integer points;
-    private Boolean correct;
 }
