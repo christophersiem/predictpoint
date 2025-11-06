@@ -11,8 +11,8 @@
 /* Karte */
 .bet-card {
     background: linear-gradient(180deg, rgba(7,8,10,.55) 0%, rgba(0,0,0,.14) 100%);
-    border: 1px solid var(--border-weak, rgba(255,255,255,.06));
-    border-radius: var(--radius-lg, 1rem);
+    border: 1px solid var(--border-soft, rgba(255,255,255,.06));
+    border-radius: 1rem;
     padding: 1rem;
     min-height: 180px;
     display: flex;
