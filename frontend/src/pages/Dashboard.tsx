@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {OpenBetsSection} from '../components/dashboard/OpenBetsSection';
-import {EvaluatedSection} from '../components/dashboard/EvaluatedSection';
+import {EvaluatedSection} from '../components/dashboard/EvaluatedSection/EvaluatedSection.tsx';
 import {Leaderboard} from '../components/dashboard/Leaderboard';
 import './Dashboard.css';
 import {useOutletContext} from "react-router-dom";
@@ -19,7 +19,6 @@ export default function Dashboard() {
 
     const [showEvaluated, setShowEvaluated] = useState(false);
     const {user} = useUser();
-    const [lbTick, setLbTick] = useState(0);
 
     const activeTournament =
         tournaments.find((t) => t.id === activeId) ?? tournaments[0];
