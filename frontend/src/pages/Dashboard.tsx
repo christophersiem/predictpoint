@@ -52,7 +52,6 @@ export default function Dashboard() {
                         onToggle={() => setShowEvaluated((p) => !p)}
                         onBetResolved={async (betId, updated) => {
                             await applyResolvedBet?.(activeId, betId, updated);
-                            setLbTick((t) => t + 1);
                         }}
                     />
                 </div>
