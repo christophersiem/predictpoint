@@ -34,7 +34,7 @@ public class BetController {
         return ResponseEntity.created(location).body(createdBet);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BetResponse> getById(@PathVariable String id) {
         return ResponseEntity.of(betService.getBetById(id));
     }
